@@ -15,9 +15,15 @@ function App() {
   console.log(board);
   return (
     <>
-      <div className="flex flex-col justify-center items-center h-screen">
-        <h2 className="text-3xl font-medium mb-4">Puntos: <span>{}</span></h2>
+      <div className="flex flex-col justify-around items-center h-screen">
+        <div className="header-wrapper w-full flex flex-row justify-around align-middle">
+          <h1 className="text-4xl text-white">TETRIS</h1>
+          <h2 className="text-2xl text-white">
+            Puntos: <span>0</span>
+          </h2>
+        </div>
         <Board matrix={board}></Board>
+        <h3>PROXIMA PIEZA</h3>
       </div>
       {/* CREAR EL LOOP PRINCIPAL DEL JUEGO, ACTUALIZANDO TABLERO CON GRAVITY */}
       {/* CUANDO UNA PIEZA AL FONDO, SE SOLIDIFICA EN LA MATRIZ */}
