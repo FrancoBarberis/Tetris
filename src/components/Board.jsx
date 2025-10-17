@@ -14,12 +14,17 @@ export default function Board({ matrix }) {
     for (let dy = 0; dy < pieceMatrix.length; dy++) {
       for (let dx = 0; dx < pieceMatrix[dy].length; dx++) {
         if (pieceMatrix[dy][dx]) {
-          const x = newPosition.x + dx; //Coloca una celda en la posición futura segun la pieza
-          const y = newPosition.y + dy; //Coloca una celda en la posición futura segun la pieza
-          if (x < 0 || x >= matrix[0].length || y < 0 || y >= matrix.length) {
+          const x = newPosition.x + dx;
+          const y = newPosition.y + dy;
+          // No permitir fuera del tablero por abajo
+          if (y >= matrix.length) {
             return false;
           }
-          if (matrix[y][x] !== 0) {
+          // Permitir celdas fuera del tablero por la izquierda (x < 0)
+          if (x >= matrix[0].length || y < 0) {
+            return false;
+          }
+          if (x >= 0 && matrix[y][x] !== 0) {
             return false;
           }
         }
@@ -27,6 +32,7 @@ export default function Board({ matrix }) {
     }
     return true;
   }
+  // Rotación simple: solo rota si cabe
   function rotatePiece(piece) {
     const rows = piece.matrix.length;
     const cols = piece.matrix[0].length;
@@ -41,7 +47,12 @@ export default function Board({ matrix }) {
 
   // Estado para la pieza activa y su posición
   const [activeShape, setActiveShape] = useState(getRandomShape());
-  const [activePosition, setActivePosition] = useState({ x: -1, y: 5 });
+  // Calcula la posición inicial para que toda la pieza esté fuera del tablero
+  const getInitialPosition = (shape) => ({
+    x: -(shape.matrix[0].length - 1),
+    y: Math.floor((matrix.length - shape.matrix.length) / 2)
+  });
+  const [activePosition, setActivePosition] = useState(getInitialPosition(activeShape));
 
   // Crea una copia de la matriz para renderizar
   const visualMatrix = matrix.map((row) => [...row]);
@@ -57,6 +68,24 @@ export default function Board({ matrix }) {
     });
   });
 
+  // Solidificación: solo si todas las celdas activas están dentro del tablero
+  function solidifyIfNeeded() {
+    let allInside = true;
+    activeShape.matrix.forEach((row, dy) => {
+      row.forEach((cell, dx) => {
+        if (cell) {
+          const x = activePosition.x + dx;
+          if (x < 0) allInside = false;
+        }
+      });
+    });
+    // Aquí deberías llamar a la lógica de solidificación y respawn si allInside
+    // Ejemplo:
+    // if (allInside && !canMove({ x: activePosition.x + 1, y: activePosition.y })) {
+    //   ...
+    // }
+  }
+
   // Referencia para el intervalo de gravedad
   const gravityInterval = useRef(null);
 
@@ -65,7 +94,7 @@ export default function Board({ matrix }) {
     const handleKeyDown = (event) => {
       const key = event.key;
       if (key === "ArrowLeft" || key === "a" || key === "A") {
-        setActiveShape(rotatePiece(activeShape));
+        setActiveShape(shape => rotatePiece(shape));
       }
       if (key === "ArrowRight" || key === "d" || key === "D") {
         setActivePosition(pos => {
