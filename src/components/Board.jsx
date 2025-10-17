@@ -14,8 +14,8 @@ export default function Board({ matrix }) {
     for (let dy = 0; dy < pieceMatrix.length; dy++) {
       for (let dx = 0; dx < pieceMatrix[dy].length; dx++) {
         if (pieceMatrix[dy][dx]) {
-          const x = newPosition.x + dx;
-          const y = newPosition.y + dy;
+          const x = newPosition.x + dx; //Coloca una celda en la posición futura segun la pieza
+          const y = newPosition.y + dy; //Coloca una celda en la posición futura segun la pieza
           if (x < 0 || x >= matrix[0].length || y < 0 || y >= matrix.length) {
             return false;
           }
@@ -84,13 +84,17 @@ export default function Board({ matrix }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activePosition]);
 
-  // Gravedad horizontal
+  // GRAVEDAD HORIZONTAL (DERECHA)
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setActivePosition((pos) => ({ x: pos.x + 1, y: pos.y }));
+      const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
+      if (canMove(nextPosition)) {
+        setActivePosition(nextPosition);
+      } 
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [canMove, activePosition]);
   // Colores por tipo de pieza
   const shapeColors = {
     I: "bg-cyan-400",
