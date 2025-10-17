@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState, useRef } from "react";
 import { getRandomShape } from "../utils/shapes";
 
 // RESPONSABILIDADES DE BOARD:
@@ -41,7 +41,7 @@ export default function Board({ matrix }) {
 
   // Estado para la pieza activa y su posición
   const [activeShape, setActiveShape] = useState(getRandomShape());
-  const [activePosition, setActivePosition] = useState({ x: 1, y: 5 });
+  const [activePosition, setActivePosition] = useState({ x: -1, y: 5 });
 
   // Crea una copia de la matriz para renderizar
   const visualMatrix = matrix.map((row) => [...row]);
@@ -57,44 +57,71 @@ export default function Board({ matrix }) {
     });
   });
 
-  //DETECTAR INPUTS
+  // Referencia para el intervalo de gravedad
+  const gravityInterval = useRef(null);
 
+  //DETECTAR INPUTS
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "ArrowLeft") {
         setActiveShape(rotatePiece(activeShape));
       }
       if (event.key === "ArrowRight") {
-        if (canMove({ x: activePosition.x + 1, y: activePosition.y })) {
-          setActivePosition((pos) => ({ x: pos.x + 1, y: pos.y }));
-        }
+        setActivePosition(pos => {
+          if (canMove({ x: pos.x + 1, y: pos.y })) {
+            // Reinicia el intervalo de gravedad
+            if (gravityInterval.current) {
+              clearInterval(gravityInterval.current);
+              gravityInterval.current = setInterval(() => {
+                setActivePosition(pos2 => {
+                  const nextPosition = { x: pos2.x + 1, y: pos2.y };
+                  if (canMove(nextPosition)) {
+                    return nextPosition;
+                  }
+                  return pos2;
+                });
+              }, 1000);
+            }
+            return { x: pos.x + 1, y: pos.y };
+          }
+          return pos;
+        });
       }
       if (event.key === "ArrowDown") {
-        if (canMove({ x: activePosition.x, y: activePosition.y + 1 })) {
-          setActivePosition((pos) => ({ x: pos.x, y: pos.y + 1 }));
-        }
+        setActivePosition(pos => {
+          if (canMove({ x: pos.x, y: pos.y + 1 })) {
+            return { x: pos.x, y: pos.y + 1 };
+          }
+          return pos;
+        });
       }
       if (event.key === "ArrowUp") {
-        if (canMove({ x: activePosition.x, y: activePosition.y - 1 })) {
-          setActivePosition((pos) => ({ x: pos.x, y: pos.y - 1 }));
-        }
+        setActivePosition(pos => {
+          if (canMove({ x: pos.x, y: pos.y - 1 })) {
+            return { x: pos.x, y: pos.y - 1 };
+          }
+          return pos;
+        });
       }
     };
-     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activePosition]);
+  }, []);
 
   // GRAVEDAD HORIZONTAL (DERECHA)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
-      if (canMove(nextPosition)) {
-        setActivePosition(nextPosition);
-      } 
+    gravityInterval.current = setInterval(() => {
+      setActivePosition(pos => {
+        const nextPosition = { x: pos.x + 1, y: pos.y };
+        if (canMove(nextPosition)) {
+          return nextPosition;
+        }
+        return pos;
+      });
     }, 1000);
-    return () => clearInterval(interval);
-  }, [canMove, activePosition]);
+    return () => clearInterval(gravityInterval.current);
+  }, []);
   // Colores por tipo de pieza
   const shapeColors = {
     I: "bg-cyan-400",
