@@ -63,10 +63,11 @@ export default function Board({ matrix }) {
   //DETECTAR INPUTS
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === "ArrowLeft") {
+      const key = event.key;
+      if (key === "ArrowLeft" || key === "a" || key === "A") {
         setActiveShape(rotatePiece(activeShape));
       }
-      if (event.key === "ArrowRight") {
+      if (key === "ArrowRight" || key === "d" || key === "D") {
         setActivePosition(pos => {
           if (canMove({ x: pos.x + 1, y: pos.y })) {
             // Reinicia el intervalo de gravedad
@@ -87,7 +88,7 @@ export default function Board({ matrix }) {
           return pos;
         });
       }
-      if (event.key === "ArrowDown") {
+      if (key === "ArrowDown" || key === "s" || key === "S") {
         setActivePosition(pos => {
           if (canMove({ x: pos.x, y: pos.y + 1 })) {
             return { x: pos.x, y: pos.y + 1 };
@@ -95,7 +96,7 @@ export default function Board({ matrix }) {
           return pos;
         });
       }
-      if (event.key === "ArrowUp") {
+      if (key === "ArrowUp" || key === "w" || key === "W") {
         setActivePosition(pos => {
           if (canMove({ x: pos.x, y: pos.y - 1 })) {
             return { x: pos.x, y: pos.y - 1 };
