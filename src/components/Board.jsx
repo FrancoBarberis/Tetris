@@ -1,23 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getRandomShape } from "../utils/shapes";
 
-// RESPONSABILIDADES DE BOARD:
-
-// RENDERIZAR EL TABLERO Y ACTUALIZARLO
-//RENDERIZAR LAS PIEZAS DENTRO DEL TABLERO
-//GENERAR PIEZAS ALEATORIAS
-//SOLIDIFICAR PIEZAS
-
 export default function Board() {
-  
   const rows = 12;
   const cols = 35;
 
-  // HOOKS Y ESTADOS
-
-  const [activePiece, setActivePiece] = useState(null); //ACTUALIZA LA PIEZA, SIRVE PARA LAS ROTACIONES
-
-  const [activePosition, setActivePosition] = useState(null); //ACTUALIZA LA POSICION DE LA PIEZA
+  const [activePiece, setActivePiece] = useState(null);
+  const [activePosition, setActivePosition] = useState(null);
 
   const [board, setBoard] = useState(
     Array.from({ length: rows }, () => Array(cols).fill(null))
@@ -25,25 +14,20 @@ export default function Board() {
 
   function spawnPiece() {
     setActivePiece(getRandomShape());
-    setActivePosition({ x: 1, y: 5 });
+    setActivePosition({ x: 5, y: 1 }); // x = horizontal, y = vertical
   }
-
-  // FUNCIONES DE MOVIMIENTO, ROTACION Y SOLIDIFICACION
 
   function rotatePiece(piece) {
     return piece;
   }
+
   function canMove(nextPosition) {
     return true;
   }
 
   function solidifyPiece() {
-    // ACTUALIZAR LA MATRIZ DEL TABLERO
-    // LIMPIAR FILAS COMPLETAS
-    // SPAWNEAR NUEVA PIEZA
     spawnPiece();
   }
-  //LISTENERS PARA INPUTS DEL TECLADO
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -70,7 +54,8 @@ export default function Board() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
-  //GAME LOOP CON GRAVEDAD
+  //GRAVEDAD HORIZONTAL
+
   useEffect(() => {
     const interval = setInterval(() => {
       const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
@@ -95,25 +80,43 @@ export default function Board() {
     L: "bg-orange-400",
   };
 
-  
-return (
-  <div
-    className="board grid"
-    style={{
-      gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-      gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-      aspectRatio: `${cols} / ${rows}`,
-    }}
-  >
-    {board.flat().map((cell, i) => (
-      <div
-        key={i}
-        className={`border border-blue-800 w-10 h-10 ${
-          cell ? shapeColors[cell] : "bg-gray-900"
-        }`}
-      />
-    ))}
-  </div>
-);
+  return (
+    <div
+      className="board grid"
+      style={{
+        gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        aspectRatio: `${cols} / ${rows}`,
+      }}
+    >
+      {board.map((row, rowIndex) =>
+        row.map((cell, colIndex) => {
+          let value = cell;
 
+          if (activePiece && activePosition) {
+            for (let r = 0; r < activePiece.matrix.length; r++) {
+              for (let c = 0; c < activePiece.matrix[r].length; c++) {
+                if (activePiece.matrix[r][c]) {
+                  const y = activePosition.y + r;
+                  const x = activePosition.x + c;
+                  if (y === rowIndex && x === colIndex) {
+                    value = activePiece.type;
+                  }
+                }
+              }
+            }
+          }
+
+          return (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              className={`border border-blue-800 w-10 h-10 ${
+                value ? shapeColors[value] : "bg-gray-900"
+              }`}
+            />
+          );
+        })
+      )}
+    </div>
+  );
 }
