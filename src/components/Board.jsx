@@ -18,7 +18,11 @@ export default function Board() {
   }
 
   function rotatePiece(piece) {
-    return piece;
+    const newPiece = {...piece };
+    newPiece.matrix = piece.matrix[0].map((_, index) =>
+      piece.matrix.map(row => row[index]).reverse()
+    );
+    return newPiece;
   }
 
   function canMove(nextPosition) {
