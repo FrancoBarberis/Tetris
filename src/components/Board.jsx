@@ -22,12 +22,40 @@ export default function Board() {
   }
 
   function canMove(nextPosition) {
-    return true;
+  if (!activePiece) return false;
+
+  for (let r = 0; r < activePiece.matrix.length; r++) {
+    for (let c = 0; c < activePiece.matrix[r].length; c++) {
+      if (activePiece.matrix[r][c]) {
+        const x = nextPosition.x + c; // eje horizontal
+        const y = nextPosition.y + r; // eje vertical
+
+        if (x < 0 || x >= cols || y < 0 || y >= rows) {
+          return false;
+        }
+      }
+    }
   }
 
+  return true;
+}
+
   function solidifyPiece() {
-    spawnPiece();
-  }
+  const newBoard = board.map(row => [...row]);
+
+  activePiece.matrix.forEach((row, r) => {
+    row.forEach((cell, c) => {
+      if (cell) {
+        const y = activePosition.y + r;
+        const x = activePosition.x + c;
+        newBoard[y][x] = activePiece.type;
+      }
+    });
+  });
+
+  setBoard(newBoard);
+  spawnPiece();
+}
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -61,6 +89,8 @@ export default function Board() {
       const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
       if (canMove(nextPosition)) {
         setActivePosition(nextPosition);
+      } else {
+        solidifyPiece();
       }
     }, 1000);
     return () => clearInterval(interval);
