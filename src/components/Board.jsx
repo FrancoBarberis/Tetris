@@ -18,12 +18,55 @@ export default function Board() {
   }
 
   function rotatePiece(piece) {
-    const newPiece = {...piece };
-    newPiece.matrix = piece.matrix[0].map((_, index) =>
-      piece.matrix.map(row => row[index]).reverse()
-    );
-    return newPiece;
+  const rotatedMatrix = piece.matrix[0].map((_, i) =>
+    piece.matrix.map(row => row[i]).reverse()
+  );
+
+  const newPiece = { ...piece, matrix: rotatedMatrix };
+
+  const kicks = [
+    { x: 0, y: 0 },     // posición actual
+    { x: -1, y: 0 },    // izquierda
+    { x: 1, y: 0 },     // derecha
+    { x: 0, y: -1 },    // arriba
+    { x: 0, y: 1 },     // abajo
+  ];
+
+  for (const kick of kicks) {
+    const testPosition = {
+      x: activePosition.x + kick.x,
+      y: activePosition.y + kick.y,
+    };
+
+    let fits = true;
+
+    for (let r = 0; r < rotatedMatrix.length; r++) {
+      for (let c = 0; c < rotatedMatrix[r].length; c++) {
+        if (!rotatedMatrix[r][c]) continue;
+
+        const x = testPosition.x + c;
+        const y = testPosition.y + r;
+
+        if (
+          x < 0 || x >= cols ||
+          y < 0 || y >= rows ||
+          board[y][x]
+        ) {
+          fits = false;
+          break;
+        }
+      }
+      if (!fits) break;
+    }
+
+    if (fits) {
+      setActivePosition(testPosition);
+      return newPiece;
+    }
   }
+
+  return piece; // no se pudo rotar con ningún kick
+}
 
   function canMove(nextPosition) {
   if (!activePiece) return false;
