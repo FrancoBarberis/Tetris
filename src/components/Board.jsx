@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { getRandomShape } from "../utils/shapes";
 
 // RESPONSABILIDADES DE BOARD:
@@ -8,151 +8,83 @@ import { getRandomShape } from "../utils/shapes";
 //GENERAR PIEZAS ALEATORIAS
 //SOLIDIFICAR PIEZAS
 
-export default function Board({ matrix }) {
+export default function Board() {
   
-  function canMove(newPosition, pieceMatrix = activeShape.matrix) {
-    for (let dy = 0; dy < pieceMatrix.length; dy++) {
-      for (let dx = 0; dx < pieceMatrix[dy].length; dx++) {
-        if (pieceMatrix[dy][dx]) {
-          const x = newPosition.x + dx;
-          const y = newPosition.y + dy;
-          // No permitir fuera del tablero por abajo
-          if (y >= matrix.length) {
-            return false;
-          }
-          // Permitir celdas fuera del tablero por la izquierda (x < 0)
-          if (x >= matrix[0].length || y < 0) {
-            return false;
-          }
-          if (x >= 0 && matrix[y][x] !== 0) {
-            return false;
-          }
-        }
-      }
-    }
+  const rows = 12;
+  const cols = 35;
+
+  // HOOKS Y ESTADOS
+
+  const [activePiece, setActivePiece] = useState(null); //ACTUALIZA LA PIEZA, SIRVE PARA LAS ROTACIONES
+
+  const [activePosition, setActivePosition] = useState(null); //ACTUALIZA LA POSICION DE LA PIEZA
+
+  const [board, setBoard] = useState(
+    Array.from({ length: rows }, () => Array(cols).fill(null))
+  );
+
+  function spawnPiece() {
+    setActivePiece(getRandomShape());
+    setActivePosition({ x: 1, y: 5 });
+  }
+
+  // FUNCIONES DE MOVIMIENTO, ROTACION Y SOLIDIFICACION
+
+  function rotatePiece(piece) {
+    return piece;
+  }
+  function canMove(nextPosition) {
     return true;
   }
-  // Rotación simple: solo rota si cabe
-  function rotatePiece(piece) {
-    const rows = piece.matrix.length;
-    const cols = piece.matrix[0].length;
-    const rotatedMatrix = Array.from({ length: cols }, (_, x) =>
-      Array.from({ length: rows }, (_, y) => piece.matrix[rows - 1 - y][x])
-    );
-    if (!canMove(activePosition, rotatedMatrix)) {
-      return piece;
-    }
-    return { ...piece, matrix: rotatedMatrix };
+
+  function solidifyPiece() {
+    // ACTUALIZAR LA MATRIZ DEL TABLERO
+    // LIMPIAR FILAS COMPLETAS
+    // SPAWNEAR NUEVA PIEZA
+    spawnPiece();
   }
+  //LISTENERS PARA INPUTS DEL TECLADO
 
-  // Estado para la pieza activa y su posición
-  const [activeShape, setActiveShape] = useState(getRandomShape());
-  // Calcula la posición inicial para que toda la pieza esté fuera del tablero
-  const getInitialPosition = (shape) => ({
-    x: -(shape.matrix[0].length - 1),
-    y: Math.floor((matrix.length - shape.matrix.length) / 2)
-  });
-  const [activePosition, setActivePosition] = useState(getInitialPosition(activeShape));
-
-  // Crea una copia de la matriz para renderizar
-  const visualMatrix = matrix.map((row) => [...row]);
-
-  // Combina la pieza activa en la matriz visual
-  activeShape.matrix.forEach((row, dy) => {
-    row.forEach((cell, dx) => {
-      const x = activePosition.x + dx;
-      const y = activePosition.y + dy;
-      if (cell && visualMatrix[y] && visualMatrix[y][x] !== undefined) {
-        visualMatrix[y][x] = activeShape.type; // Marca la celda con el tipo de pieza
-      }
-    });
-  });
-
-  // Solidificación: solo si todas las celdas activas están dentro del tablero
-  function solidifyIfNeeded() {
-    let allInside = true;
-    activeShape.matrix.forEach((row, dy) => {
-      row.forEach((cell, dx) => {
-        if (cell) {
-          const x = activePosition.x + dx;
-          if (x < 0) allInside = false;
-        }
-      });
-    });
-    // Aquí deberías llamar a la lógica de solidificación y respawn si allInside
-    // Ejemplo:
-    // if (allInside && !canMove({ x: activePosition.x + 1, y: activePosition.y })) {
-    //   ...
-    // }
-  }
-
-  // Referencia para el intervalo de gravedad
-  const gravityInterval = useRef(null);
-
-  //DETECTAR INPUTS
   useEffect(() => {
     const handleKeyDown = (event) => {
-      const key = event.key;
-      if (key === "ArrowLeft" || key === "a" || key === "A") {
-        setActiveShape(shape => rotatePiece(shape));
+      if (event.key === "ArrowLeft") {
+        setActivePiece(rotatePiece(activePiece));
       }
-      if (key === "ArrowRight" || key === "d" || key === "D") {
-        setActivePosition(pos => {
-          if (canMove({ x: pos.x + 1, y: pos.y })) {
-            // Reinicia el intervalo de gravedad
-            if (gravityInterval.current) {
-              clearInterval(gravityInterval.current);
-              gravityInterval.current = setInterval(() => {
-                setActivePosition(pos2 => {
-                  const nextPosition = { x: pos2.x + 1, y: pos2.y };
-                  if (canMove(nextPosition)) {
-                    return nextPosition;
-                  }
-                  return pos2;
-                });
-              }, 1000);
-            }
-            return { x: pos.x + 1, y: pos.y };
-          }
-          return pos;
-        });
+      if (event.key === "ArrowRight") {
+        if (canMove({ x: activePosition.x + 1, y: activePosition.y })) {
+          setActivePosition((pos) => ({ x: pos.x + 1, y: pos.y }));
+        }
       }
-      if (key === "ArrowDown" || key === "s" || key === "S") {
-        setActivePosition(pos => {
-          if (canMove({ x: pos.x, y: pos.y + 1 })) {
-            return { x: pos.x, y: pos.y + 1 };
-          }
-          return pos;
-        });
+      if (event.key === "ArrowDown") {
+        if (canMove({ x: activePosition.x, y: activePosition.y + 1 })) {
+          setActivePosition((pos) => ({ x: pos.x, y: pos.y + 1 }));
+        }
       }
-      if (key === "ArrowUp" || key === "w" || key === "W") {
-        setActivePosition(pos => {
-          if (canMove({ x: pos.x, y: pos.y - 1 })) {
-            return { x: pos.x, y: pos.y - 1 };
-          }
-          return pos;
-        });
+      if (event.key === "ArrowUp") {
+        if (canMove({ x: activePosition.x, y: activePosition.y - 1 })) {
+          setActivePosition((pos) => ({ x: pos.x, y: pos.y - 1 }));
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  });
 
-  // GRAVEDAD HORIZONTAL (DERECHA)
+  //GAME LOOP CON GRAVEDAD
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
+      if (canMove(nextPosition)) {
+        setActivePosition(nextPosition);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [canMove, activePosition]);
 
   useEffect(() => {
-    gravityInterval.current = setInterval(() => {
-      setActivePosition(pos => {
-        const nextPosition = { x: pos.x + 1, y: pos.y };
-        if (canMove(nextPosition)) {
-          return nextPosition;
-        }
-        return pos;
-      });
-    }, 1000);
-    return () => clearInterval(gravityInterval.current);
+    spawnPiece();
   }, []);
-  // Colores por tipo de pieza
+
   const shapeColors = {
     I: "bg-cyan-400",
     O: "bg-yellow-400",
@@ -163,21 +95,25 @@ export default function Board({ matrix }) {
     L: "bg-orange-400",
   };
 
-  return (
-    <div
-      className="board grid gap-1"
-      style={{ gridTemplateColumns: `repeat(${matrix[0].length}, 1fr)` }}
-    >
-      {visualMatrix.map((fila, y) =>
-        fila.map((celda, x) => (
-          <div
-            key={`${y}-${x}`}
-            className={`cell w-9 h-9 border ${
-              celda ? shapeColors[celda] || "bg-blue-500" : "bg-gray-800"
-            }`}
-          />
-        ))
-      )}
-    </div>
-  );
+  
+return (
+  <div
+    className="board grid"
+    style={{
+      gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+      gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+      aspectRatio: `${cols} / ${rows}`,
+    }}
+  >
+    {board.flat().map((cell, i) => (
+      <div
+        key={i}
+        className={`border border-blue-800 w-10 h-10 ${
+          cell ? shapeColors[cell] : "bg-gray-900"
+        }`}
+      />
+    ))}
+  </div>
+);
+
 }
