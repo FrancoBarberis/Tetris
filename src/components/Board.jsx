@@ -161,7 +161,7 @@ export default function Board() {
       } else {
         solidifyPiece();
       }
-    }, 800);
+    }, 600);
     return () => clearInterval(interval);
   }, [canMove, activePosition]);
 
@@ -187,13 +187,13 @@ export default function Board() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4 w-full">
+    <div className="flex flex-col items-center space-y-6 w-full">
       {/* Header con título, próxima pieza y puntaje */}
-      <div className="w-full flex justify-between items-center px-6 py-4 bg-gray-800 text-white">
-        <span className="text-2xl font-bold">Tetris</span>
+      <div className="w-full flex justify-around items-center px-6 py-4 bg-gradient-to-t from-amber-500 to-amber-700 text-white">
+        <span className="text-2xl font-bold">POKÉTRIS</span>
 
         <div className="flex flex-col items-center">
-          <span className="text-lg font-semibold">Next</span>
+          <span className="text-lg font-semibold mb-2">NEXT</span>
           <div
             className="grid"
             style={{
@@ -206,7 +206,7 @@ export default function Board() {
                 <div
                   key={`${rIdx}-${cIdx}`}
                   className={`w-6 h-6 border ${
-                    cell ? shapeColors[nextPiece.type] : "bg-transparent"
+                    cell ? "bg-black" : "bg-transparent"
                   }`}
                 />
               ))
