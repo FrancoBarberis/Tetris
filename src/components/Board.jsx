@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { getRandomShape } from "../utils/shapes";
 
 export default function Board() {
-  const rows = 12;
-  const cols = 35;
+  const rows = 10;
+  const cols = 30;
 
   const [activePiece, setActivePiece] = useState(null);
   const [activePosition, setActivePosition] = useState(null);
   const [nextPiece, setNextPiece] = useState(getRandomShape());
+  const [score, setScore] = useState(0);
 
   const [board, setBoard] = useState(
     Array.from({ length: rows }, () => Array(cols).fill(null))
@@ -15,7 +16,7 @@ export default function Board() {
 
   function spawnPiece() {
     setActivePiece(nextPiece);
-    setActivePosition({ x: 5, y: 1 });
+    setActivePosition({ x: -1, y: 5 });
     setNextPiece(getRandomShape());
   }
 
@@ -98,6 +99,8 @@ export default function Board() {
       });
     });
 
+    let linesCleared = 0;
+
     for (let col = 0; col < cols; col++) {
       let isFull = true;
       for (let row = 0; row < rows; row++) {
@@ -108,11 +111,16 @@ export default function Board() {
       }
 
       if (isFull) {
+        linesCleared++;
         for (let row = 0; row < rows; row++) {
           newBoard[row].splice(col, 1);
           newBoard[row].unshift(null);
         }
       }
+    }
+
+    if (linesCleared > 0) {
+      setScore(prev => prev + linesCleared * 100);
     }
 
     setBoard(newBoard);
@@ -152,12 +160,19 @@ export default function Board() {
       } else {
         solidifyPiece();
       }
-    }, 1000);
+    }, 800);
     return () => clearInterval(interval);
   }, [canMove, activePosition]);
 
   useEffect(() => {
     spawnPiece();
+  }, []);
+
+  useEffect(() => {
+    const scoreInterval = setInterval(() => {
+      setScore(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(scoreInterval);
   }, []);
 
   const shapeColors = {
@@ -171,7 +186,13 @@ export default function Board() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex flex-col items-center space-y-4 w-full">
+      {/* Header */}
+      <div className="w-full flex justify-around items-center px-6 py-4 bg-gray-800 text-white text-2xl font-bold">
+        <span>Tetris</span>
+        <span>Score: {score}</span>
+      </div>
+
       {/* Tablero */}
       <div
         className="board grid"
@@ -202,7 +223,7 @@ export default function Board() {
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`border border-blue-800 w-10 h-10 ${
+                className={`border border-black w-8 h-8 ${
                   value ? shapeColors[value] : "bg-gray-900"
                 }`}
               />
@@ -212,8 +233,8 @@ export default function Board() {
       </div>
 
       {/* Panel de próxima pieza */}
-      <div className="next-piece-panel text-center">
-        <h2 className="text-white mb-1">NEXT PIECE</h2>
+      <div className="next-piece-panel flex flex-col items-center gap-5 mb-2">
+        <h2 className="text-white text-3xl">NEXT PIECE</h2>
         <div
           className="grid justify-center"
           style={{
