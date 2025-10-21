@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getRandomShape } from "../utils/shapes";
+import BoardBackground from "../assets/Eevee 4k.jpg";
 
 export default function Board() {
-  const rows = 10;
+  const rows = 12;
   const cols = 30;
 
   const [activePiece, setActivePiece] = useState(null);
@@ -187,10 +188,33 @@ export default function Board() {
 
   return (
     <div className="flex flex-col items-center space-y-4 w-full">
-      {/* Header */}
-      <div className="w-full flex justify-around items-center px-6 py-4 bg-gray-800 text-white text-2xl font-bold">
-        <span>Tetris</span>
-        <span>Score: {score}</span>
+      {/* Header con título, próxima pieza y puntaje */}
+      <div className="w-full flex justify-between items-center px-6 py-4 bg-gray-800 text-white">
+        <span className="text-2xl font-bold">Tetris</span>
+
+        <div className="flex flex-col items-center">
+          <span className="text-lg font-semibold">Next</span>
+          <div
+            className="grid"
+            style={{
+              gridTemplateRows: `repeat(${nextPiece.matrix.length}, minmax(0, 1fr))`,
+              gridTemplateColumns: `repeat(${nextPiece.matrix[0].length}, minmax(0, 1fr))`,
+            }}
+          >
+            {nextPiece.matrix.map((row, rIdx) =>
+              row.map((cell, cIdx) => (
+                <div
+                  key={`${rIdx}-${cIdx}`}
+                  className={`w-6 h-6 border ${
+                    cell ? shapeColors[nextPiece.type] : "bg-transparent"
+                  }`}
+                />
+              ))
+            )}
+          </div>
+        </div>
+
+        <span className="text-2xl font-bold">Score: {score}</span>
       </div>
 
       {/* Tablero */}
@@ -200,6 +224,11 @@ export default function Board() {
           gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
           gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
           aspectRatio: `${cols} / ${rows}`,
+          backgroundImage: `url(${BoardBackground})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "red",
         }}
       >
         {board.map((row, rowIndex) =>
@@ -223,36 +252,13 @@ export default function Board() {
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`border border-black w-8 h-8 ${
-                  value ? shapeColors[value] : "bg-gray-900"
+                className={`border border-black opacity-100 contrast-200 w-8 h-8 ${
+                  value ? shapeColors[value] : "bg-transparent"
                 }`}
               />
             );
           })
         )}
-      </div>
-
-      {/* Panel de próxima pieza */}
-      <div className="next-piece-panel flex flex-col items-center gap-5 mb-2">
-        <h2 className="text-white text-3xl">NEXT PIECE</h2>
-        <div
-          className="grid justify-center"
-          style={{
-            gridTemplateRows: `repeat(${nextPiece.matrix.length}, minmax(0, 1fr))`,
-            gridTemplateColumns: `repeat(${nextPiece.matrix[0].length}, minmax(0, 1fr))`,
-          }}
-        >
-          {nextPiece.matrix.map((row, rIdx) =>
-            row.map((cell, cIdx) => (
-              <div
-                key={`${rIdx}-${cIdx}`}
-                className={`w-10 h-10 border ${
-                  cell ? shapeColors[nextPiece.type] : "bg-transparent"
-                }`}
-              />
-            ))
-          )}
-        </div>
       </div>
     </div>
   );
