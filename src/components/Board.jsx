@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getRandomShape } from "../utils/shapes";
 import BoardBackground from "../assets/Eevee 4k.jpg";
+import BoardVideo from "../assets/EeveeVid.mp4";
+import Logo from "../assets/poketrisLOGO.png";
 
 export default function Board() {
   const rows = 12;
@@ -187,10 +189,14 @@ export default function Board() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-6 w-full">
+    <div className="flex flex-col items-start space-y-6 w-full h-full">
       {/* Header con título, próxima pieza y puntaje */}
-      <div className="w-full flex justify-around items-center px-6 py-4 bg-gradient-to-t from-amber-500 to-amber-700 text-white">
-        <span className="text-2xl font-bold">POKÉTRIS</span>
+      <div className="w-full flex justify-between items-center px-6 py-4 bg-gradient-to-t from-amber-500 to-amber-700 text-white">
+        <img
+          className="h-15 object-contain"
+          src={Logo}
+          alt="Pokétris Logo"
+        />
 
         <div className="flex flex-col items-center">
           <span className="text-lg font-semibold mb-2">NEXT</span>
@@ -214,23 +220,33 @@ export default function Board() {
           </div>
         </div>
 
-        <span className="text-2xl font-bold">Score: {score}</span>
+        <span className="text-2xl font-bold ">Score: {score}</span>
       </div>
 
       {/* Tablero */}
-      <div
-        className="board grid"
-        style={{
-          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-          aspectRatio: `${cols} / ${rows}`,
-          backgroundImage: `url(${BoardBackground})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundColor: "red",
-        }}
-      >
+      <div className="flex-1 flex items-center justify-center w-full">
+        <div
+          className="relative board grid overflow-hidden"
+          style={{
+            gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+            aspectRatio: `${cols} / ${rows}`,
+            backgroundColor: "red",
+            width: 'min(90vw, 960px)'
+          }}
+        >
+          {/* Video de fondo */}
+          <video
+            src={BoardVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+
+          {/* Overlay para atenuar el video de fondo */}
+          <div className="absolute inset-0 bg-black opacity-40 pointer-events-none" />
         {board.map((row, rowIndex) =>
           row.map((cell, colIndex) => {
             let value = cell;
@@ -259,6 +275,7 @@ export default function Board() {
             );
           })
         )}
+        </div>
       </div>
     </div>
   );
