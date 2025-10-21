@@ -121,20 +121,20 @@ export default function Board() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === "ArrowLeft") {
+      if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
         setActivePiece(rotatePiece(activePiece));
       }
-      if (event.key === "ArrowRight") {
+      if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
         if (canMove({ x: activePosition.x + 1, y: activePosition.y })) {
           setActivePosition((pos) => ({ x: pos.x + 1, y: pos.y }));
         }
       }
-      if (event.key === "ArrowDown") {
+      if (event.key === "ArrowDown" || event.key === "s" || event.key === "S") {
         if (canMove({ x: activePosition.x, y: activePosition.y + 1 })) {
           setActivePosition((pos) => ({ x: pos.x, y: pos.y + 1 }));
         }
       }
-      if (event.key === "ArrowUp") {
+      if (event.key === "ArrowUp" || event.key === "w" || event.key === "W") {
         if (canMove({ x: activePosition.x, y: activePosition.y - 1 })) {
           setActivePosition((pos) => ({ x: pos.x, y: pos.y - 1 }));
         }
@@ -213,7 +213,7 @@ export default function Board() {
 
       {/* Panel de próxima pieza */}
       <div className="next-piece-panel text-center">
-        <h2 className="text-white mb-1">Próxima pieza</h2>
+        <h2 className="text-white mb-1">NEXT PIECE</h2>
         <div
           className="grid justify-center"
           style={{
@@ -225,8 +225,8 @@ export default function Board() {
             row.map((cell, cIdx) => (
               <div
                 key={`${rIdx}-${cIdx}`}
-                className={`w-6 h-6 border border-blue-800 ${
-                  cell ? shapeColors[nextPiece.type] : "bg-gray-900"
+                className={`w-10 h-10 border ${
+                  cell ? shapeColors[nextPiece.type] : "bg-transparent"
                 }`}
               />
             ))
