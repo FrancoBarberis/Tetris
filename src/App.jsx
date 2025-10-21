@@ -12,12 +12,7 @@ function App() {
           </h2>
         </div>
         <Board />
-        <h3 className="text-white">PROXIMA PIEZA</h3>
       </div>
-      {/* CREAR EL LOOP PRINCIPAL DEL JUEGO, ACTUALIZANDO TABLERO CON GRAVITY */}
-      {/* CUANDO UNA PIEZA AL FONDO, SE SOLIDIFICA EN LA MATRIZ */}
-      {/* CUANDO SE SOLIDIFICA UNA PIEZA, SE CREA OTRA PIEZA */}
-      {/* CUANDO SE COMPLETA UNA FILA, SE ELIMINA Y SE BAJA LA MATRIZ COMPLETA */}
     </>
   );
 }

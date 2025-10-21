@@ -7,14 +7,16 @@ export default function Board() {
 
   const [activePiece, setActivePiece] = useState(null);
   const [activePosition, setActivePosition] = useState(null);
+  const [nextPiece, setNextPiece] = useState(getRandomShape());
 
   const [board, setBoard] = useState(
     Array.from({ length: rows }, () => Array(cols).fill(null))
   );
 
   function spawnPiece() {
-    setActivePiece(getRandomShape());
-    setActivePosition({ x: 5, y: 1 }); // x = horizontal, y = vertical
+    setActivePiece(nextPiece);
+    setActivePosition({ x: 5, y: 1 });
+    setNextPiece(getRandomShape());
   }
 
   function rotatePiece(piece) {
@@ -25,11 +27,11 @@ export default function Board() {
     const newPiece = { ...piece, matrix: rotatedMatrix };
 
     const kicks = [
-      { x: 0, y: 0 }, // posición actual
-      { x: -1, y: 0 }, // izquierda
-      { x: 1, y: 0 }, // derecha
-      { x: 0, y: -1 }, // arriba
-      { x: 0, y: 1 }, // abajo
+      { x: 0, y: 0 },
+      { x: -1, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: -1 },
+      { x: 0, y: 1 },
     ];
 
     for (const kick of kicks) {
@@ -61,7 +63,7 @@ export default function Board() {
       }
     }
 
-    return piece; // no se pudo rotar con ningún kick
+    return piece;
   }
 
   function canMove(nextPosition) {
@@ -70,8 +72,8 @@ export default function Board() {
     for (let r = 0; r < activePiece.matrix.length; r++) {
       for (let c = 0; c < activePiece.matrix[r].length; c++) {
         if (activePiece.matrix[r][c]) {
-          const x = nextPosition.x + c; // eje horizontal
-          const y = nextPosition.y + r; // eje vertical
+          const x = nextPosition.x + c;
+          const y = nextPosition.y + r;
 
           if (x < 0 || x >= cols || y < 0 || y >= rows || board[y][x]) {
             return false;
@@ -96,7 +98,6 @@ export default function Board() {
       });
     });
 
-    // Detectar columnas completas
     for (let col = 0; col < cols; col++) {
       let isFull = true;
       for (let row = 0; row < rows; row++) {
@@ -106,11 +107,10 @@ export default function Board() {
         }
       }
 
-      // Si la columna está llena, eliminarla
       if (isFull) {
         for (let row = 0; row < rows; row++) {
-          newBoard[row].splice(col, 1); // eliminar la celda
-          newBoard[row].unshift(null); // agregar celda vacía al inicio
+          newBoard[row].splice(col, 1);
+          newBoard[row].unshift(null);
         }
       }
     }
@@ -144,8 +144,6 @@ export default function Board() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
-  //GRAVEDAD HORIZONTAL
-
   useEffect(() => {
     const interval = setInterval(() => {
       const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
@@ -173,42 +171,68 @@ export default function Board() {
   };
 
   return (
-    <div
-      className="board grid"
-      style={{
-        gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-        aspectRatio: `${cols} / ${rows}`,
-      }}
-    >
-      {board.map((row, rowIndex) =>
-        row.map((cell, colIndex) => {
-          let value = cell;
+    <div className="flex flex-col items-center space-y-4">
+      {/* Tablero */}
+      <div
+        className="board grid"
+        style={{
+          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+          aspectRatio: `${cols} / ${rows}`,
+        }}
+      >
+        {board.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            let value = cell;
 
-          if (activePiece && activePosition) {
-            for (let r = 0; r < activePiece.matrix.length; r++) {
-              for (let c = 0; c < activePiece.matrix[r].length; c++) {
-                if (activePiece.matrix[r][c]) {
-                  const y = activePosition.y + r;
-                  const x = activePosition.x + c;
-                  if (y === rowIndex && x === colIndex) {
-                    value = activePiece.type;
+            if (activePiece && activePosition) {
+              for (let r = 0; r < activePiece.matrix.length; r++) {
+                for (let c = 0; c < activePiece.matrix[r].length; c++) {
+                  if (activePiece.matrix[r][c]) {
+                    const y = activePosition.y + r;
+                    const x = activePosition.x + c;
+                    if (y === rowIndex && x === colIndex) {
+                      value = activePiece.type;
+                    }
                   }
                 }
               }
             }
-          }
 
-          return (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              className={`border border-blue-800 w-10 h-10 ${
-                value ? shapeColors[value] : "bg-gray-900"
-              }`}
-            />
-          );
-        })
-      )}
+            return (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                className={`border border-blue-800 w-10 h-10 ${
+                  value ? shapeColors[value] : "bg-gray-900"
+                }`}
+              />
+            );
+          })
+        )}
+      </div>
+
+      {/* Panel de próxima pieza */}
+      <div className="next-piece-panel text-center">
+        <h2 className="text-white mb-1">Próxima pieza</h2>
+        <div
+          className="grid justify-center"
+          style={{
+            gridTemplateRows: `repeat(${nextPiece.matrix.length}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${nextPiece.matrix[0].length}, minmax(0, 1fr))`,
+          }}
+        >
+          {nextPiece.matrix.map((row, rIdx) =>
+            row.map((cell, cIdx) => (
+              <div
+                key={`${rIdx}-${cIdx}`}
+                className={`w-6 h-6 border border-blue-800 ${
+                  cell ? shapeColors[nextPiece.type] : "bg-gray-900"
+                }`}
+              />
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }
