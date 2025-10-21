@@ -77,7 +77,7 @@ export default function Board() {
         const x = nextPosition.x + c; // eje horizontal
         const y = nextPosition.y + r; // eje vertical
 
-        if (x < 0 || x >= cols || y < 0 || y >= rows) {
+        if (x < 0 || x >= cols || y < 0 || y >= rows || board[y][x]) {
           return false;
         }
       }
