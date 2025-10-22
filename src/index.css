@@ -10,3 +10,8 @@ html, body, #root {
 :root {
   background-color: black;
 }
+
+/* Evita layout shift cuando aparece/desaparece la scrollbar */
+html {
+  overflow-y: scroll;
+}

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { getRandomShape } from "../utils/shapes";
+import { getRandomShape, resetBag } from "../utils/shapes";
 import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
 
 export default function Board() {
-  const rows = 12;
-  const cols = 30;
+  const rows = 10;
+  const cols = 25;
+  // Preview config (ajustado para que las celdas del preview sean w-6 h-6 => 24px)
+  const previewCell = 24; // px (w-6 h-6)
+  const previewBox = 72; // px caja fija
 
   const [activePiece, setActivePiece] = useState(null);
   const [activePosition, setActivePosition] = useState(null);
@@ -16,10 +19,42 @@ export default function Board() {
   const [board, setBoard] = useState(
     Array.from({ length: rows }, () => Array(cols).fill(null))
   );
+  const [gameOver, setGameOver] = useState(false);
 
   function spawnPiece() {
+    // Posición de inicio: completamente a la izquierda (fuera del tablero)
+    // usando el ancho de la pieza para que ninguna celda nazca dentro
+    const shapeWidth = nextPiece.matrix[0].length;
+    const shapeHeight = nextPiece.matrix.length;
+    const startPos = { x: -shapeWidth, y: Math.max(Math.floor((rows - shapeHeight) / 2), 0) };
+
+    // comprobar colisión en spawn: solo consideramos solapamiento con celdas
+    // ya ocupadas dentro de los límites del tablero. Si la pieza está
+    // parcialmente fuera (y < 0 o x fuera), no consideramos eso como game over.
+    let collision = false;
+    for (let r = 0; r < nextPiece.matrix.length; r++) {
+      for (let c = 0; c < nextPiece.matrix[r].length; c++) {
+        if (!nextPiece.matrix[r][c]) continue;
+        const y = startPos.y + r;
+        const x = startPos.x + c;
+        // Solo si está dentro del tablero comprobamos solapamiento
+        if (y >= 0 && y < rows && x >= 0 && x < cols) {
+          if (board[y][x]) {
+            collision = true;
+            break;
+          }
+        }
+      }
+      if (collision) break;
+    }
+
+    if (collision) {
+      setGameOver(true);
+      return;
+    }
+
     setActivePiece(nextPiece);
-    setActivePosition({ x: -1, y: 5 });
+    setActivePosition(startPos);
     setNextPiece(getRandomShape());
   }
 
@@ -53,7 +88,16 @@ export default function Board() {
           const x = testPosition.x + c;
           const y = testPosition.y + r;
 
-          if (x < 0 || x >= cols || y < 0 || y >= rows || board[y][x]) {
+          // If outside right/bottom -> invalid
+          if (x >= cols || y >= rows) {
+            fits = false;
+            break;
+          }
+
+          // If outside left/top, ignore for collision (allowed during spawn/entering)
+          if (x < 0 || y < 0) continue;
+
+          if (board[y][x]) {
             fits = false;
             break;
           }
@@ -79,9 +123,14 @@ export default function Board() {
           const x = nextPosition.x + c;
           const y = nextPosition.y + r;
 
-          if (x < 0 || x >= cols || y < 0 || y >= rows || board[y][x]) {
-            return false;
-          }
+          // If moving outside right or bottom -> invalid
+          if (x >= cols || y >= rows) return false;
+
+          // If outside left/top, allow (piece can enter the board)
+          if (x < 0 || y < 0) continue;
+
+          // Otherwise check collision with settled blocks
+          if (board[y][x]) return false;
         }
       }
     }
@@ -92,13 +141,20 @@ export default function Board() {
   function solidifyPiece() {
     const newBoard = board.map((row) => [...row]);
 
+    // Detectar si alguna celda de la pieza queda fuera del tablero al solidificar
+    let outOfBounds = false;
     activePiece.matrix.forEach((row, r) => {
       row.forEach((cell, c) => {
-        if (cell) {
-          const y = activePosition.y + r;
-          const x = activePosition.x + c;
-          newBoard[y][x] = activePiece.type;
+        if (!cell) return;
+        const y = activePosition.y + r;
+        const x = activePosition.x + c;
+        // Si la celda está fuera de los límites, marcar outOfBounds
+        if (y < 0 || y >= rows || x < 0 || x >= cols) {
+          outOfBounds = true;
+          return;
         }
+        // Solo escribir dentro del tablero
+        newBoard[y][x] = activePiece.type;
       });
     });
 
@@ -127,7 +183,25 @@ export default function Board() {
     }
 
     setBoard(newBoard);
+
+    if (outOfBounds) {
+      // Si alguna celda quedó fuera al solidificar, es game over
+      setGameOver(true);
+      return;
+    }
+
+    // después de solidificar, intentar spawnear la siguiente
     spawnPiece();
+  }
+
+  function restartGame() {
+    setBoard(Array.from({ length: rows }, () => Array(cols).fill(null)));
+    resetBag();
+    setScore(0);
+    setGameOver(false);
+    setNextPiece(getRandomShape());
+    setActivePiece(null);
+    setActivePosition(null);
   }
 
   useEffect(() => {
@@ -179,44 +253,59 @@ export default function Board() {
   }, []);
 
   const shapeColors = {
-    I: "bg-cyan-400",
-    O: "bg-yellow-400",
-    T: "bg-purple-400",
-    S: "bg-green-400",
-    Z: "bg-red-400",
-    J: "bg-blue-400",
-    L: "bg-orange-400",
+    I: "bg-teal-600 text-white",
+    O: "bg-yellow-500 text-black",
+    T: "bg-indigo-700 text-white",
+    S: "bg-emerald-600 text-white",
+    Z: "bg-pink-600 text-white",
+    J: "bg-blue-700 text-white",
+    L: "bg-amber-600 text-black",
   };
 
   return (
     <div className="flex flex-col items-start space-y-6 w-full h-full">
       {/* Header con título, próxima pieza y puntaje */}
-      <div className="w-full flex justify-between items-center px-6 py-4 bg-gradient-to-t from-amber-500 to-amber-700 text-white">
+  <div className="w-full flex justify-between items-center px-6 py-4 bg-gradient-to-t from-amber-500 to-amber-700 text-white" style={{ minHeight: 80 }}>
         <img
           className="h-15 object-contain"
           src={Logo}
           alt="Pokétris Logo"
         />
 
-        <div className="flex flex-col items-center">
-          <span className="text-lg font-semibold mb-2">NEXT</span>
+        <div className="flex flex-col items-center justify-center" style={{ minWidth: 72 }}>
+          <span className="text-lg font-semibold mb-1">NEXT</span>
+          {/* Caja fija y centrada para preview; las celdas se posicionan dentro */}
           <div
-            className="grid"
             style={{
-              gridTemplateRows: `repeat(${nextPiece.matrix.length}, minmax(0, 1fr))`,
-              gridTemplateColumns: `repeat(${nextPiece.matrix[0].length}, minmax(0, 1fr))`,
+              position: 'relative',
+              width: `${previewBox}px`,
+              height: `${previewBox}px`,
             }}
           >
-            {nextPiece.matrix.map((row, rIdx) =>
-              row.map((cell, cIdx) => (
-                <div
-                  key={`${rIdx}-${cIdx}`}
-                  className={`w-6 h-6 border ${
-                    cell ? "bg-black" : "bg-transparent"
-                  }`}
-                />
-              ))
-            )}
+            {(() => {
+              const matrixH = nextPiece.matrix.length * previewCell;
+              const matrixW = nextPiece.matrix[0].length * previewCell;
+              const topOffset = Math.max((previewBox - matrixH) / 2, 0);
+              const leftOffset = Math.max((previewBox - matrixW) / 2, 0);
+
+              return nextPiece.matrix.map((row, rIdx) =>
+                row.map((cell, cIdx) =>
+                  cell ? (
+                    <div
+                      key={`${rIdx}-${cIdx}`}
+                      className={`${shapeColors[nextPiece.type]} border border-black`}
+                      style={{
+                        position: 'absolute',
+                        width: `${previewCell}px`,
+                        height: `${previewCell}px`,
+                        left: leftOffset + cIdx * previewCell,
+                        top: topOffset + rIdx * previewCell,
+                      }}
+                    />
+                  ) : null
+                )
+              );
+            })()}
           </div>
         </div>
 
@@ -268,7 +357,7 @@ export default function Board() {
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`border border-black opacity-100 contrast-200 w-8 h-8 ${
+                className={`border border-black opacity-100 contrast-200 w-10 h-10 ${
                   value ? shapeColors[value] : "bg-transparent"
                 }`}
               />
@@ -277,6 +366,20 @@ export default function Board() {
         )}
         </div>
       </div>
+      {gameOver && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white p-6 rounded shadow-lg text-center">
+            <h2 className="text-xl font-bold mb-4">Game Over</h2>
+            <p className="mb-4">Tu puntuación: {score}</p>
+            <button
+              onClick={restartGame}
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Reiniciar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
