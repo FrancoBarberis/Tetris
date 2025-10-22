@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getRandomShape, resetBag } from "../utils/shapes";
+import GameOverModal from "./GameOverModal";
 import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
@@ -334,8 +335,8 @@ export default function Board() {
             className="absolute inset-0 w-full h-full object-cover"
           />
 
-          {/* Overlay para atenuar el video de fondo */}
-          <div className="absolute inset-0 bg-black opacity-40 pointer-events-none" />
+          {/* Overlay para atenuar el video de fondo. Su opacidad baja cuando está el modal abierto para que el modal destaque pero el tablero siga visible */}
+          <div className={`absolute inset-0 bg-black pointer-events-none ${gameOver ? 'opacity-20' : 'opacity-40'}`} />
         {board.map((row, rowIndex) =>
           row.map((cell, colIndex) => {
             let value = cell;
@@ -366,19 +367,9 @@ export default function Board() {
         )}
         </div>
       </div>
+      {/* El tablero siempre se renderiza; el modal aparece encima como un popup */}
       {gameOver && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
-          <div className="bg-white p-6 rounded shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-4">Game Over</h2>
-            <p className="mb-4">Tu puntuación: {score}</p>
-            <button
-              onClick={restartGame}
-              className="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-              Reiniciar
-            </button>
-          </div>
-        </div>
+        <GameOverModal score={score} onRestart={restartGame} />
       )}
     </div>
   );
