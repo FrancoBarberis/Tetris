@@ -1,3 +1,16 @@
+:root {
+  /* ...existing code... */
+}
+
+@keyframes fadeOutCol {
+  0% { opacity: 1; }
+  80% { opacity: 0.2; }
+  100% { opacity: 0; }
+}
+
+.fade-out-col {
+  animation: fadeOutCol 0.5s linear forwards;
+}
 /* src/style.css */
 @import "tailwindcss";
 html, body, #root {

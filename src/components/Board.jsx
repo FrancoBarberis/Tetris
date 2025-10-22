@@ -6,7 +6,7 @@ import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
 
 export default function Board() {
-  const rows = 10;
+  const rows = 12;
   const cols = 25;
   // Preview config (ajustado para que las celdas del preview sean w-6 h-6 => 24px)
   const previewCell = 24; // px (w-6 h-6)
@@ -127,8 +127,9 @@ export default function Board() {
           // If moving outside right or bottom -> invalid
           if (x >= cols || y >= rows) return false;
 
-          // If outside left/top, allow (piece can enter the board)
-          if (x < 0 || y < 0) continue;
+          // Si intenta moverse fuera del tablero por arriba, bloquear
+          if (y < 0) return false;
+          if (x < 0) continue;
 
           // Otherwise check collision with settled blocks
           if (board[y][x]) return false;
@@ -159,8 +160,7 @@ export default function Board() {
       });
     });
 
-    let linesCleared = 0;
-
+    let colsToClear = [];
     for (let col = 0; col < cols; col++) {
       let isFull = true;
       for (let row = 0; row < rows; row++) {
@@ -169,18 +169,33 @@ export default function Board() {
           break;
         }
       }
-
-      if (isFull) {
-        linesCleared++;
-        for (let row = 0; row < rows; row++) {
-          newBoard[row].splice(col, 1);
-          newBoard[row].unshift(null);
-        }
-      }
+      if (isFull) colsToClear.push(col);
     }
 
-    if (linesCleared > 0) {
-      setScore(prev => prev + linesCleared * 100);
+    if (colsToClear.length > 0) {
+      setScore(prev => prev + colsToClear.length * 100);
+      // Marcar las celdas a eliminar con fade-out antes de borrarlas
+      setBoard(prev => {
+        return prev.map((row, rowIdx) =>
+          row.map((cell, colIdx) =>
+            colsToClear.includes(colIdx) && cell ? { type: cell, fading: true } : cell
+          )
+        );
+      });
+      // Esperar la animación antes de eliminar
+      setTimeout(() => {
+        const clearedBoard = newBoard.map((row) => [...row]);
+        for (const col of colsToClear) {
+          for (let row = 0; row < rows; row++) {
+            clearedBoard[row].splice(col, 1);
+            clearedBoard[row].unshift(null);
+          }
+        }
+        setBoard(clearedBoard);
+        // después de solidificar, intentar spawnear la siguiente
+        spawnPiece();
+      }, 500);
+      return;
     }
 
     setBoard(newBoard);
@@ -366,12 +381,13 @@ export default function Board() {
               }
             }
 
+            // Si la celda es un objeto con fading, aplicar la clase de animación
+            const isFading = value && typeof value === 'object' && value.fading;
+            const cellType = isFading ? value.type : value;
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`border border-black opacity-100 contrast-200 w-10 h-10 ${
-                  value ? shapeColors[value] : "bg-transparent"
-                }`}
+                className={`border border-black opacity-100 contrast-200 w-10 h-10 ${cellType ? shapeColors[cellType] : "bg-transparent"}${isFading ? ' fade-out-col' : ''}`}
               />
             );
           })
