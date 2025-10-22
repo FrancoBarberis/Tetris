@@ -306,43 +306,45 @@ export default function Board() {
         />
 
         <div className="flex flex-col items-center justify-center" style={{ minWidth: 96 }}>
-          <span className="text-sm font-semibold mb-1 uppercase tracking-wide text-yellow-200 drop-shadow">NEXT</span>
-          {/* Caja fija y centrada para preview; blur y fondo semitransparente */}
-          <div className="rounded-xl bg-gradient-to-br from-yellow-200/60 via-pink-200/40 to-purple-300/60 backdrop-blur-md p-2 border-2 border-pink-300 shadow-md flex items-center justify-center" style={{ width: `${previewBox}px`, height: `${previewBox}px`, position: 'relative', overflow: 'hidden' }}>
-            {(() => {
-              const matrixH = nextPiece.matrix.length * previewCell;
-              const matrixW = nextPiece.matrix[0].length * previewCell;
-              // Si la pieza es más grande que el box, reducir el tamaño de la celda
-              const scale = Math.min(previewBox / matrixW, previewBox / matrixH, 1);
-              const cellSize = previewCell * scale;
-              const offsetY = (previewBox - (nextPiece.matrix.length * cellSize)) / 2;
-              const offsetX = (previewBox - (nextPiece.matrix[0].length * cellSize)) / 2;
+          {/* Caja fija y centrada para preview; blur y fondo semitransparente, más padding */}
+          <div className="rounded-xl bg-gradient-to-br from-yellow-200/60 via-pink-200/40 to-purple-300/60 backdrop-blur-md px-10 py-2 border-2 border-pink-300 shadow-md flex flex-col items-center justify-center gap-0.5" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative', overflow: 'hidden' }}>
+            <span className="text-sm font-bold mb-2 uppercase tracking-wide text-white drop-shadow-lg">NEXT</span>
+            <div style={{ width: `${previewBox}px`, height: `${previewBox}px`, position: 'relative' }}>
+              {(() => {
+                const matrixH = nextPiece.matrix.length * previewCell;
+                const matrixW = nextPiece.matrix[0].length * previewCell;
+                // Si la pieza es más grande que el box, reducir el tamaño de la celda
+                const scale = Math.min(previewBox / matrixW, previewBox / matrixH, 1);
+                const cellSize = previewCell * scale;
+                const offsetY = (previewBox - (nextPiece.matrix.length * cellSize)) / 2;
+                const offsetX = (previewBox - (nextPiece.matrix[0].length * cellSize)) / 2;
 
-              return nextPiece.matrix.map((row, rIdx) =>
-                row.map((cell, cIdx) =>
-                  cell ? (
-                    <div
-                      key={`${rIdx}-${cIdx}`}
-                      className={`${shapeColors[nextPiece.type]} border border-black`}
-                      style={{
-                        position: 'absolute',
-                        width: `${cellSize}px`,
-                        height: `${cellSize}px`,
-                        left: offsetX + cIdx * cellSize,
-                        top: offsetY + rIdx * cellSize,
-                        boxSizing: 'border-box',
-                      }}
-                    />
-                  ) : null
-                )
-              );
-            })()}
+                return nextPiece.matrix.map((row, rIdx) =>
+                  row.map((cell, cIdx) =>
+                    cell ? (
+                      <div
+                        key={`${rIdx}-${cIdx}`}
+                        className={`${shapeColors[nextPiece.type]} border border-black`}
+                        style={{
+                          position: 'absolute',
+                          width: `${cellSize}px`,
+                          height: `${cellSize}px`,
+                          left: offsetX + cIdx * cellSize,
+                          top: offsetY + rIdx * cellSize,
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    ) : null
+                  )
+                );
+              })()}
+            </div>
           </div>
         </div>
 
         <div className="flex items-center gap-3 mt-2">
-          <span className="text-xs uppercase opacity-90 text-pink-200">Score</span>
-          <div className="text-2xl font-extrabold bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-500 text-white px-4 py-1 rounded-full shadow ring-2 ring-pink-300/30 text-center" style={{ minWidth: 80 }}>{score}</div>
+          <span className="text-xs uppercase opacity-90 text-pink-200 drop-shadow-lg">Score</span>
+          <div className="text-3xl font-black bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-500 text-white px-4 py-1 rounded-full shadow ring-2 ring-pink-300/30 text-center drop-shadow-lg" style={{ minWidth: 80 }}>{score}</div>
         </div>
       </div>
 
