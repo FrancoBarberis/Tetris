@@ -33,24 +33,14 @@ function refillBag() {
 }
 
 export function getRandomShape() {
-  if (bag.length === 0) refillBag();
-
-  // Evitar (si es posible) que la pieza devuelta sea del mismo tipo que la última
-  let piece = bag.pop();
-  if (piece && piece.type === lastPickedType && bag.length > 0) {
-    // buscar un elemento distinto y devolverlo, dejando el repetido en la bolsa
-    for (let i = bag.length - 1; i >= 0; i--) {
-      if (bag[i].type !== lastPickedType) {
-        const alt = bag.splice(i, 1)[0];
-        bag.push(piece); // devolver el original repetido a la bolsa
-        piece = alt;
-        break;
-      }
-    }
-  }
-
-  if (piece) lastPickedType = piece.type;
-  return piece;
+  // DEBUG: solo retornar pieza tipo I
+  const iShape = shapes.find(s => s.type === "I");
+  lastPickedType = "I";
+  // Clonar para evitar mutaciones
+  return {
+    type: iShape.type,
+    matrix: iShape.matrix.map(row => row.slice())
+  };
 }
 
 export default shapes;

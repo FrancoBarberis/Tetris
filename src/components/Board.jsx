@@ -160,8 +160,9 @@ export default function Board() {
       });
     });
 
+    // Chequeo de columnas completas consecutivas de derecha a izquierda
     let colsToClear = [];
-    for (let col = 0; col < cols; col++) {
+    for (let col = cols - 1; col >= 0; col--) {
       let isFull = true;
       for (let row = 0; row < rows; row++) {
         if (!newBoard[row][col]) {
@@ -169,7 +170,12 @@ export default function Board() {
           break;
         }
       }
-      if (isFull) colsToClear.push(col);
+      if (isFull) {
+        colsToClear.push(col);
+      } else {
+        // Al encontrar la primera incompleta, detener el chequeo
+        break;
+      }
     }
 
     if (colsToClear.length > 0) {
@@ -185,6 +191,7 @@ export default function Board() {
       // Esperar la animación antes de eliminar
       setTimeout(() => {
         const clearedBoard = newBoard.map((row) => [...row]);
+        // Eliminar todas las columnas a la vez
         for (const col of colsToClear) {
           for (let row = 0; row < rows; row++) {
             clearedBoard[row].splice(col, 1);
