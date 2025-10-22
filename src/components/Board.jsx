@@ -231,6 +231,9 @@ export default function Board() {
   });
 
   useEffect(() => {
+    // Pausar el bucle de movimiento si estamos en game over o no hay pieza activa
+    if (gameOver || !activePosition) return;
+
     const interval = setInterval(() => {
       const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
       if (canMove(nextPosition)) {
@@ -240,18 +243,21 @@ export default function Board() {
       }
     }, 600);
     return () => clearInterval(interval);
-  }, [canMove, activePosition]);
+  }, [canMove, activePosition, gameOver]);
 
   useEffect(() => {
     spawnPiece();
   }, []);
 
   useEffect(() => {
+    // Solo incrementar score mientras el juego no esté en gameOver
+    if (gameOver) return;
+
     const scoreInterval = setInterval(() => {
       setScore(prev => prev + 1);
     }, 1000);
     return () => clearInterval(scoreInterval);
-  }, []);
+  }, [gameOver]);
 
   const shapeColors = {
     I: "bg-teal-600 text-white",
