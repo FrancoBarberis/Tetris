@@ -304,7 +304,7 @@ export default function Board() {
         <div className="flex flex-col items-center justify-center" style={{ minWidth: 96 }}>
           {/* Caja fija y centrada para preview; blur y fondo semitransparente, más padding */}
           <div className="rounded-xl bg-gradient-to-br from-yellow-200/60 via-pink-200/40 to-purple-300/60 backdrop-blur-md  border-pink-300 shadow-md flex flex-col items-center justify-center" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative', overflow: 'hidden' }}>
-            <span className="text-sm font-bold uppercase tracking-wide text-white drop-shadow-lg">NEXT</span>
+            <span className="text-sm font-bold pt-1 tracking-wide text-white drop-shadow-lg" style={{ fontFamily: "PokeFont, sans-serif" }}>Next piece</span>
             <div style={{ width: `${previewBox}px`, height: `${previewBox}px`, position: 'relative' }}>
               {(() => {
                 const matrixH = nextPiece.matrix.length * previewCell;
@@ -340,7 +340,7 @@ export default function Board() {
 
         <div className="flex items-center gap-3 mt-2">
           <span className="text-xs uppercase opacity-90 text-pink-200 drop-shadow-lg">Score</span>
-          <div className="text-3xl font-black bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-500 text-white px-4 py-1 rounded-full shadow ring-2 ring-pink-300/30 text-center drop-shadow-lg" style={{ minWidth: 80 }}>{score}</div>
+          <div className=" text-3xl font-black bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-500 text-white px-4 py-1 rounded-2xl shadow ring-pink-300/30 text-center" style={{ fontFamily: "PokeFont, sans-serif", minWidth: 100 }}>{score}</div>
         </div>
       </div>
 
@@ -353,7 +353,6 @@ export default function Board() {
             gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
             aspectRatio: `${cols} / ${rows}`,
             backgroundColor: "red",
-            width: 'min(90vw, 960px)'
           }}
         >
           {/* Video de fondo */}
@@ -392,7 +391,7 @@ export default function Board() {
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`border border-black opacity-100 contrast-200 w-10 h-10 ${cellType ? shapeColors[cellType] : "bg-transparent"}${isFading ? ' fade-out-col' : ''}`}
+                className={`border border-black opacity-100 contrast-200 w-7 h-7 ${cellType ? shapeColors[cellType] : "bg-transparent"}${isFading ? ' fade-out-col' : ''}`}
               />
             );
           })

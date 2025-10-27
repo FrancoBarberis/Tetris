@@ -1,7 +1,10 @@
-:root {
-  /* ...existing code... */
-}
 
+@font-face {
+  font-family: 'font-PokeFont';
+  src: url('./assets/pokemon_pixel_font.ttf') format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 @keyframes fadeOutCol {
   0% { opacity: 1; }
   80% { opacity: 0.2; }
