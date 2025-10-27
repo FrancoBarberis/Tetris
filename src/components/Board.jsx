@@ -160,21 +160,17 @@ export default function Board() {
       });
     });
 
-    // Chequeo de columnas completas consecutivas de derecha a izquierda
+    // Chequeo de columnas completas para eliminar
     let colsToClear = [];
     for (let col = cols - 1; col >= 0; col--) {
       let isFull = true;
       for (let row = 0; row < rows; row++) {
         if (!newBoard[row][col]) {
           isFull = false;
-          break;
         }
       }
       if (isFull) {
         colsToClear.push(col);
-      } else {
-        // Al encontrar la primera incompleta, detener el chequeo
-        break;
       }
     }
 
@@ -296,7 +292,7 @@ export default function Board() {
   };
 
   return (
-    <div className="flex flex-col items-start space-y-6 w-full h-full">
+    <div className="flex flex-col items-start space-y-6 w-full h-fit">
       {/* Header con título, próxima pieza y puntaje */}
   <div className="w-full flex justify-between items-center px-6 py-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-700 text-white shadow-lg" style={{ minHeight: 80 }}>
         <img
@@ -307,8 +303,8 @@ export default function Board() {
 
         <div className="flex flex-col items-center justify-center" style={{ minWidth: 96 }}>
           {/* Caja fija y centrada para preview; blur y fondo semitransparente, más padding */}
-          <div className="rounded-xl bg-gradient-to-br from-yellow-200/60 via-pink-200/40 to-purple-300/60 backdrop-blur-md px-10 py-2 border-2 border-pink-300 shadow-md flex flex-col items-center justify-center gap-0.5" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative', overflow: 'hidden' }}>
-            <span className="text-sm font-bold mb-2 uppercase tracking-wide text-white drop-shadow-lg">NEXT</span>
+          <div className="rounded-xl bg-gradient-to-br from-yellow-200/60 via-pink-200/40 to-purple-300/60 backdrop-blur-md  border-pink-300 shadow-md flex flex-col items-center justify-center" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative', overflow: 'hidden' }}>
+            <span className="text-sm font-bold uppercase tracking-wide text-white drop-shadow-lg">NEXT</span>
             <div style={{ width: `${previewBox}px`, height: `${previewBox}px`, position: 'relative' }}>
               {(() => {
                 const matrixH = nextPiece.matrix.length * previewCell;
@@ -349,9 +345,9 @@ export default function Board() {
       </div>
 
       {/* Tablero */}
-      <div className="flex-1 flex items-center justify-center w-full">
+      <div className="flex-1 flex items-center justify-center w-full h-full">
         <div
-          className="relative board grid overflow-hidden"
+          className="relative board grid overflow-hidden mb-6"
           style={{
             gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
             gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
