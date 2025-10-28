@@ -4,6 +4,7 @@ import GameOverModal from "./GameOverModal";
 import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
+import pokemonData from "../utils/pokemons";
 
 export default function Board() {
   const rows = 12;
@@ -16,7 +17,6 @@ export default function Board() {
   const [activePosition, setActivePosition] = useState(null);
   const [nextPiece, setNextPiece] = useState(getRandomShape());
   const [score, setScore] = useState(0);
-
   const [board, setBoard] = useState(
     Array.from({ length: rows }, () => Array(cols).fill(null))
   );
