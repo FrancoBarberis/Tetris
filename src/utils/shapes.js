@@ -25,11 +25,22 @@ function shuffle(array) {
 
 function refillBag() {
   // Deep-clone para evitar que cualquier mutación altere las plantillas originales
-  const cloned = shapes.map(s => ({
+  let cloned = shapes.map(s => ({
     type: s.type,
     matrix: s.matrix.map(row => row.slice())
   }));
-  bag = shuffle(cloned);
+  let shuffled = shuffle(cloned);
+  // Si la primera pieza del nuevo bag es igual a la última del anterior, intercambiar con otra
+  if (lastPickedType && shuffled[0].type === lastPickedType) {
+    for (let i = 1; i < shuffled.length; i++) {
+      if (shuffled[i].type !== lastPickedType) {
+        // Intercambiar la primera por una distinta
+        [shuffled[0], shuffled[i]] = [shuffled[i], shuffled[0]];
+        break;
+      }
+    }
+  }
+  bag = shuffled;
 }
 
 export function getRandomShape() {
