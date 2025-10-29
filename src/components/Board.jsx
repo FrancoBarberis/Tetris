@@ -4,7 +4,6 @@ import GameOverModal from "./GameOverModal";
 import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
-import pokemonData from "../utils/pokemons";
 
 export default function Board() {
   const rows = 12;
