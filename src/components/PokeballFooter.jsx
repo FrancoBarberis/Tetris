@@ -36,7 +36,7 @@ function PokeballHTML({ name, className }) {
     >
       <span className="text-2xl font-extrabold mb-2 drop-shadow flex items-center justify-center" style={{height: '2.5rem', position: 'relative'}}>
         <span className="mr-0 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 bg-clip-text text-transparent" style={{position: 'static'}}>x</span>
-        <span className="relative inline-block w-8 h-8 overflow-visible" style={{position: 'relative'}}>
+        <span className="ball-counter relative inline-block w-8 h-8 overflow-visible" style={{position: 'relative'}}>
           {prevCount !== null && animating && (
             <span key={`old-${prevCount}`} className="absolute left-0 top-0 w-full h-full bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 bg-clip-text text-transparent animate-pokeball-count-push-old text-2xl font-extrabold pointer-events-none">
               {prevCount}

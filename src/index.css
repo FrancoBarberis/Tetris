@@ -96,7 +96,6 @@
 .fade-out-col {
   animation: fadeOutCol 0.5s linear forwards;
 }
-/* Pokeball styles */
 /* Pokeball styles refinados */
 .pokeball {
   width: 72px;
@@ -203,9 +202,4 @@ html, body, #root {
 
 :root {
   background-color: black;
-}
-
-/* Evita layout shift cuando aparece/desaparece la scrollbar */
-html, body {
-  overflow-y: hidden;
 }

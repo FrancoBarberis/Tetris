@@ -5,6 +5,10 @@ import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
 
+
+// CORREGIR:
+// CUANDO SE LIMPIA UNA COLUMNA Y LAS PIEZAS SOBRANTES SE MUEVEN A LA DERECHA, SI SE FORMA OTRA COLUMNA COMPLETA, ESTA NO SE LIMPIA HASTA QUE SE SOLIDIFICA LA PIEZA SIGUIENTE. DEBERÍA LIMPIARSE INMEDIATAMENTE.
+
 export default function Board({ pokemonBox, onStateChange }) {
   const rows = 12;
   const cols = 25;
@@ -299,7 +303,7 @@ export default function Board({ pokemonBox, onStateChange }) {
   return (
     <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0">
       {/* Tablero y box del Pokémon */}
-  <div className="game-container flex flex-row items-center justify-around w-full flex-grow min-h-0 gap-8 px-8 max-w-7xl mx-auto" style={{height: '100%'}}>
+  <div className="game-container flex flex-row items-center justify-around w-full flex-grow min-h-0 gap-8 px-8 max-w-7xl mx-auto mt-10" style={{height: '100%'}}>
         <div className="flex-1 flex items-center justify-center">
           <div
             className="relative board grid overflow-hidden mb-6"
