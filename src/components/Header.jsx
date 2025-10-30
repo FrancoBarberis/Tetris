@@ -13,32 +13,36 @@ export default function Header({ nextPiece, score, shapeColors, previewCell = 24
         <div className="rounded-xl bg-gradient-to-br from-yellow-200/60 via-pink-200/40 to-purple-300/60 backdrop-blur-md  border-pink-300 shadow-md flex flex-col items-center justify-center" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative', overflow: 'hidden' }}>
           <span className="text-sm font-bold pt-1 tracking-wide text-white drop-shadow-lg" style={{ fontFamily: "PokeFont, sans-serif" }}>Next piece</span>
           <div style={{ width: `${previewBox}px`, height: `${previewBox}px`, position: 'relative' }}>
-            {(() => {
-              const matrixH = nextPiece.matrix.length * previewCell;
-              const matrixW = nextPiece.matrix[0].length * previewCell;
-              const scale = Math.min(previewBox / matrixW, previewBox / matrixH, 1);
-              const cellSize = previewCell * scale;
-              const offsetY = (previewBox - (nextPiece.matrix.length * cellSize)) / 2;
-              const offsetX = (previewBox - (nextPiece.matrix[0].length * cellSize)) / 2;
-              return nextPiece.matrix.map((row, rIdx) =>
-                row.map((cell, cIdx) =>
-                  cell ? (
-                    <div
-                      key={`${rIdx}-${cIdx}`}
-                      className={`${shapeColors[nextPiece.type]} border border-black`}
-                      style={{
-                        position: 'absolute',
-                        width: `${cellSize}px`,
-                        height: `${cellSize}px`,
-                        left: offsetX + cIdx * cellSize,
-                        top: offsetY + rIdx * cellSize,
-                        boxSizing: 'border-box',
-                      }}
-                    />
-                  ) : null
-                )
-              );
-            })()}
+            {nextPiece && nextPiece.matrix ? (
+              (() => {
+                const matrixH = nextPiece.matrix.length * previewCell;
+                const matrixW = nextPiece.matrix[0].length * previewCell;
+                const scale = Math.min(previewBox / matrixW, previewBox / matrixH, 1);
+                const cellSize = previewCell * scale;
+                const offsetY = (previewBox - (nextPiece.matrix.length * cellSize)) / 2;
+                const offsetX = (previewBox - (nextPiece.matrix[0].length * cellSize)) / 2;
+                return nextPiece.matrix.map((row, rIdx) =>
+                  row.map((cell, cIdx) =>
+                    cell ? (
+                      <div
+                        key={`${rIdx}-${cIdx}`}
+                        className={`${shapeColors[nextPiece.type]} border border-black`}
+                        style={{
+                          position: 'absolute',
+                          width: `${cellSize}px`,
+                          height: `${cellSize}px`,
+                          left: offsetX + cIdx * cellSize,
+                          top: offsetY + rIdx * cellSize,
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    ) : null
+                  )
+                );
+              })()
+            ) : (
+              <div className="flex items-center justify-center w-full h-full text-xs text-white/70">Cargando...</div>
+            )}
           </div>
         </div>
       </div>

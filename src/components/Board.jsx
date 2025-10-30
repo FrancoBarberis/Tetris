@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getRandomShape, resetBag } from "../utils/shapes";
-import Header from "./Header";
 import GameOverModal from "./GameOverModal";
 import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
 
-export default function Board({ pokemonBox }) {
+export default function Board({ pokemonBox, onStateChange }) {
   const rows = 12;
   const cols = 25;
   // Preview config (ajustado para que las celdas del preview sean w-6 h-6 => 24px)
@@ -291,13 +290,16 @@ export default function Board({ pokemonBox }) {
     L: "bg-amber-600 text-black",
   };
 
-  return (
-    <div className="flex flex-col items-start space-y-6 w-full h-fit">
-      {/* Header extraído */}
-      <Header nextPiece={nextPiece} score={score} shapeColors={shapeColors} previewCell={previewCell} previewBox={previewBox} />
+  useEffect(() => {
+    if (onStateChange) {
+      onStateChange({ nextPiece, score, shapeColors });
+    }
+  }, [nextPiece, score]);
 
+  return (
+    <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0">
       {/* Tablero y box del Pokémon */}
-      <div className="flex flex-row items-center justify-center w-full h-full gap-8 min-h-[400px]">
+  <div className="game-container flex flex-row items-center justify-around w-full flex-grow min-h-0 gap-8 px-8 max-w-7xl mx-auto" style={{height: '100%'}}>
         <div className="flex-1 flex items-center justify-center">
           <div
             className="relative board grid overflow-hidden mb-6"
