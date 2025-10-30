@@ -1,11 +1,18 @@
 import React from 'react';
+import { useEffect } from 'react';
 
 export default function GameOverModal({ score, onRestart, title = 'Game Over' }) {
+  useEffect(() => {
+    document.body.classList.add('overflow-hidden');
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, []);
   return (
     // Contenedor fijo que cubre toda la pantalla pero no oculta el DOM de fondo
-    <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+  <div className="fixed inset-0 flex items-center justify-center z-50">
       {/* Overlay semitransparente con blur y gradiente */}
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-200/60 via-pink-200/40 to-purple-300/60 backdrop-blur-md pointer-events-none" />
+  <div className="absolute inset-0 bg-gradient-to-br from-yellow-200/60 via-pink-200/40 to-purple-300/60 backdrop-blur-md" />
 
       {/* Modal visualmente consistente con el layout principal */}
       <div className="relative max-w-sm w-full mx-4 pointer-events-auto">

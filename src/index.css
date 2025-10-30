@@ -1,3 +1,85 @@
+@keyframes pokeball-count-push-new {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pokeball-count-push-old {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
+}
+
+.animate-pokeball-count-push-new {
+  animation: pokeball-count-push-new 0.5s cubic-bezier(.7,-0.5,.3,1.5);
+}
+.animate-pokeball-count-push-old {
+  animation: pokeball-count-push-old 0.5s cubic-bezier(.7,-0.5,.3,1.5);
+}
+@keyframes pokeball-count-in {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pokeball-count-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
+}
+
+.animate-pokeball-count-in {
+  animation: pokeball-count-in 0.5s cubic-bezier(.7,-0.5,.3,1.5);
+}
+.animate-pokeball-count-out {
+  animation: pokeball-count-out 0.5s cubic-bezier(.7,-0.5,.3,1.5);
+}
+@keyframes riseUpPokeball {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pokeball-count-animate {
+  animation: riseUpPokeball 0.5s cubic-bezier(.7,-0.5,.3,1.5);
+}
 
 @font-face {
   font-family: 'font-PokeFont';
@@ -124,6 +206,6 @@ html, body, #root {
 }
 
 /* Evita layout shift cuando aparece/desaparece la scrollbar */
-html {
-  overflow-y: scroll;
+html, body {
+  overflow-y: hidden;
 }

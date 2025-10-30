@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const pokeballs = [
   { name: "Pokeball", className: "pokeball pokeball-normal" },
@@ -8,16 +8,56 @@ const pokeballs = [
 ];
 
 function PokeballHTML({ name, className }) {
+  const [count, setCount] = useState(0);
+  const [prevCount, setPrevCount] = useState(null);
+  const [animating, setAnimating] = useState(false);
+
+  const handleClick = () => {
+    setPrevCount(count);
+    setCount(count + 1);
+    setAnimating(true);
+  };
+
+  React.useEffect(() => {
+    if (!animating) return;
+    const timeout = setTimeout(() => {
+      setPrevCount(null);
+      setAnimating(false);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [animating]);
+
   return (
-    <div className="flex flex-col items-center mx-4">
-      <div className={className} style={{position:'relative'}}>
+    <button
+      className="flex flex-col items-center mx-6 focus:outline-none group"
+      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+      tabIndex={0}
+      onClick={handleClick}
+    >
+      <span className="text-2xl font-extrabold mb-2 drop-shadow flex items-center justify-center" style={{height: '2.5rem', position: 'relative'}}>
+        <span className="mr-0 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 bg-clip-text text-transparent" style={{position: 'static'}}>x</span>
+        <span className="relative inline-block w-8 h-8 overflow-visible" style={{position: 'relative'}}>
+          {prevCount !== null && animating && (
+            <span key={`old-${prevCount}`} className="absolute left-0 top-0 w-full h-full bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 bg-clip-text text-transparent animate-pokeball-count-push-old text-2xl font-extrabold pointer-events-none">
+              {prevCount}
+            </span>
+          )}
+          <span key={`new-${count}`} className={`absolute left-0 top-0 w-full h-full bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 bg-clip-text text-transparent ${animating ? 'animate-pokeball-count-push-new' : ''} text-2xl font-extrabold pointer-events-none`}>
+            {count}
+          </span>
+        </span>
+      </span>
+      <div
+        className={className + ' transition-transform duration-200 group-hover:scale-110 group-focus:scale-110'}
+        style={{ position: 'relative' }}
+      >
         <span className="pokeball-inner" />
         {className.includes('master') && (
           <span className="pokeball-m">M</span>
         )}
       </div>
-      <span className="text-xs text-white mt-1">{name}</span>
-    </div>
+      <span className="text-xs text-white mt-2">{name}</span>
+    </button>
   );
 }
 
