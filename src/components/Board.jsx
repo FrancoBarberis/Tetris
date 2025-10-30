@@ -6,7 +6,7 @@ import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
 
-export default function Board() {
+export default function Board({ pokemonBox }) {
   const rows = 12;
   const cols = 25;
   // Preview config (ajustado para que las celdas del preview sean w-6 h-6 => 24px)
@@ -296,59 +296,63 @@ export default function Board() {
       {/* Header extraído */}
       <Header nextPiece={nextPiece} score={score} shapeColors={shapeColors} previewCell={previewCell} previewBox={previewBox} />
 
-      {/* Tablero */}
-      <div className="flex-1 flex items-center justify-center w-full h-full">
-        <div
-          className="relative board grid overflow-hidden mb-6"
-          style={{
-            gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-            aspectRatio: `${cols} / ${rows}`,
-            backgroundColor: "red",
-          }}
-        >
-          {/* Video de fondo */}
-          <video
-            src={BoardVideo}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+      {/* Tablero y box del Pokémon */}
+      <div className="flex flex-row items-center justify-center w-full h-full gap-8 min-h-[400px]">
+        <div className="flex-1 flex items-center justify-center">
+          <div
+            className="relative board grid overflow-hidden mb-6"
+            style={{
+              gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+              gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+              aspectRatio: `${cols} / ${rows}`,
+              backgroundColor: "red",
+            }}
+          >
+            {/* Video de fondo */}
+            <video
+              src={BoardVideo}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            />
 
-          {/* Overlay para atenuar el video de fondo. Su opacidad baja cuando está el modal abierto para que el modal destaque pero el tablero siga visible */}
-          <div className={`absolute inset-0 bg-black pointer-events-none ${gameOver ? 'opacity-20' : 'opacity-40'}`} />
-        {board.map((row, rowIndex) =>
-          row.map((cell, colIndex) => {
-            let value = cell;
+            {/* Overlay para atenuar el video de fondo. Su opacidad baja cuando está el modal abierto para que el modal destaque pero el tablero siga visible */}
+            <div className={`absolute inset-0 bg-black pointer-events-none ${gameOver ? 'opacity-20' : 'opacity-40'}`} />
+          {board.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              let value = cell;
 
-            if (activePiece && activePosition) {
-              for (let r = 0; r < activePiece.matrix.length; r++) {
-                for (let c = 0; c < activePiece.matrix[r].length; c++) {
-                  if (activePiece.matrix[r][c]) {
-                    const y = activePosition.y + r;
-                    const x = activePosition.x + c;
-                    if (y === rowIndex && x === colIndex) {
-                      value = activePiece.type;
+              if (activePiece && activePosition) {
+                for (let r = 0; r < activePiece.matrix.length; r++) {
+                  for (let c = 0; c < activePiece.matrix[r].length; c++) {
+                    if (activePiece.matrix[r][c]) {
+                      const y = activePosition.y + r;
+                      const x = activePosition.x + c;
+                      if (y === rowIndex && x === colIndex) {
+                        value = activePiece.type;
+                      }
                     }
                   }
                 }
               }
-            }
 
-            // Si la celda es un objeto con fading, aplicar la clase de animación
-            const isFading = value && typeof value === 'object' && value.fading;
-            const cellType = isFading ? value.type : value;
-            return (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                className={`border border-black opacity-100 contrast-200 w-7 h-7 ${cellType ? shapeColors[cellType] : "bg-transparent"}${isFading ? ' fade-out-col' : ''}`}
-              />
-            );
-          })
-        )}
+              // Si la celda es un objeto con fading, aplicar la clase de animación
+              const isFading = value && typeof value === 'object' && value.fading;
+              const cellType = isFading ? value.type : value;
+              return (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  className={`border border-black opacity-100 contrast-200 w-7 h-7 ${cellType ? shapeColors[cellType] : "bg-transparent"}${isFading ? ' fade-out-col' : ''}`}
+                />
+              );
+            })
+          )}
+          </div>
         </div>
+        {/* Box del Pokémon a la derecha del tablero */}
+        <div className="flex items-center justify-center h-full">{pokemonBox}</div>
       </div>
       {/* El tablero siempre se renderiza; el modal aparece encima como un popup */}
       {gameOver && (

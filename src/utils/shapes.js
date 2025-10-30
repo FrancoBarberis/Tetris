@@ -29,38 +29,13 @@ function refillBag() {
     type: s.type,
     matrix: s.matrix.map(row => row.slice())
   }));
-  let shuffled = shuffle(cloned);
-  // Si la primera pieza del nuevo bag es igual a la última del anterior, intercambiar con otra
-  if (lastPickedType && shuffled[0].type === lastPickedType) {
-    for (let i = 1; i < shuffled.length; i++) {
-      if (shuffled[i].type !== lastPickedType) {
-        // Intercambiar la primera por una distinta
-        [shuffled[0], shuffled[i]] = [shuffled[i], shuffled[0]];
-        break;
-      }
-    }
-  }
-  bag = shuffled;
+  bag = shuffle(cloned);
 }
 
 export function getRandomShape() {
   if (bag.length === 0) refillBag();
 
   let piece = bag.shift();
-  // Solo evitar repetición si hay más de una pieza en el bag
-  if (piece && piece.type === lastPickedType && bag.length > 0) {
-    // buscar un elemento distinto y devolverlo, dejando el repetido en la bolsa
-    for (let i = bag.length - 1; i >= 0; i--) {
-      if (bag[i].type !== lastPickedType) {
-        const alt = bag.splice(i, 1)[0];
-        bag.push(piece); // devolver el original repetido a la bolsa
-        piece = alt;
-        break;
-      }
-    }
-  }
-
-  // Siempre devolver la última pieza si es la única opción
   if (piece) lastPickedType = piece.type;
   return piece;
 }
