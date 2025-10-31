@@ -98,8 +98,8 @@
 }
 /* Pokeball styles refinados */
 .pokeball {
-  width: 72px;
-  height: 72px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   position: relative;
   box-shadow: 0 2px 12px #222;
@@ -110,9 +110,11 @@
   content: "";
   position: absolute;
   left: 0;
-  top: 33px;
+  top: 50%;
+  left: 0;
   width: 100%;
-  height: 5px;
+  height: 8px;
+  transform: translateY(-50%);
   background: var(--pokeball-band, #000);
   z-index: 2;
   border-radius: 2px;
@@ -183,14 +185,7 @@
   box-shadow: 0 0 0 4px #EE1C25 inset;
 }
 .pokeball-master .pokeball-m {
-  position: absolute;
-  left: 50%;
-  top: 18px;
-  transform: translateX(-50%);
-  color: #FFF;
-  font-weight: bold;
-  font-size: 16px;
-  z-index: 5;
+  display: none;
 }
 @import "tailwindcss";
 html, body, #root {

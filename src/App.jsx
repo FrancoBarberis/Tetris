@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Board from "./components/Board";
 import Header from "./components/Header";
 import PokemonBox from "./components/PokemonBox";
-import PokeballFooter from "./components/PokeballFooter";
+import PokeballSidebar from "./components/PokeballFooter";
 import getRandomPokemon from "./utils/pokemons";
 
 function App() {
@@ -20,17 +20,19 @@ function App() {
   const [boardState, setBoardState] = useState({ nextPiece: null, score: 0, shapeColors: {} });
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
-      <Header
-        nextPiece={boardState.nextPiece}
-        score={boardState.score}
-        shapeColors={boardState.shapeColors}
-      />
-      <Board
-        pokemonBox={<PokemonBox pokemon={pokemonActual} />}
-        onStateChange={setBoardState}
-      />
-      <PokeballFooter />
+    <div className="flex flex-row min-h-screen w-full">
+      <PokeballSidebar />
+      <div className="flex flex-col flex-1 min-h-screen">
+        <Header
+          nextPiece={boardState.nextPiece}
+          score={boardState.score}
+          shapeColors={boardState.shapeColors}
+        />
+        <Board
+          pokemonBox={<PokemonBox pokemon={pokemonActual} />}
+          onStateChange={setBoardState}
+        />
+      </div>
     </div>
   );
 }

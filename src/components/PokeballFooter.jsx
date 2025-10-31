@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
 const pokeballs = [
-  { name: "Pokeball", className: "pokeball pokeball-normal" },
-  { name: "Superball", className: "pokeball pokeball-super" },
-  { name: "Ultraball", className: "pokeball pokeball-ultra" },
-  { name: "Masterball", className: "pokeball pokeball-master" },
+  { className: "pokeball pokeball-normal" },
+  { className: "pokeball pokeball-super" },
+  { className: "pokeball pokeball-ultra" },
+  { className: "pokeball pokeball-master" },
 ];
 
-function PokeballHTML({ name, className }) {
+function PokeballHTML({ className }) {
   const [count, setCount] = useState(0);
   const [prevCount, setPrevCount] = useState(null);
   const [animating, setAnimating] = useState(false);
@@ -34,39 +34,39 @@ function PokeballHTML({ name, className }) {
       tabIndex={0}
       onClick={handleClick}
     >
-      <span className="text-2xl font-extrabold mb-2 drop-shadow flex items-center justify-center" style={{height: '2.5rem', position: 'relative'}}>
-        <span className="mr-0 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 bg-clip-text text-transparent" style={{position: 'static'}}>x</span>
-        <span className="ball-counter relative inline-block w-8 h-8 overflow-visible" style={{position: 'relative'}}>
+      <span className="flex items-center justify-center mb-2" style={{height: '3.5rem', fontWeight: 'bold', fontSize: '2.5rem', color: '#fff', letterSpacing: '2px'}}>
+        <span className="mr-2" style={{fontWeight: 'bold', fontSize: '2.5rem', color: '#fff'}}>x</span>
+        <span className="ball-counter relative inline-block w-14 h-14 overflow-visible" style={{position: 'relative'}}>
           {prevCount !== null && animating && (
-            <span key={`old-${prevCount}`} className="absolute left-0 top-0 w-full h-full bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 bg-clip-text text-transparent animate-pokeball-count-push-old text-2xl font-extrabold pointer-events-none">
+            <span key={`old-${prevCount}`} className="absolute left-0 top-0 w-full h-full animate-pokeball-count-push-old" style={{fontWeight: 'bold', fontSize: '2.5rem', color: '#fff'}}>
               {prevCount}
             </span>
           )}
-          <span key={`new-${count}`} className={`absolute left-0 top-0 w-full h-full bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 bg-clip-text text-transparent ${animating ? 'animate-pokeball-count-push-new' : ''} text-2xl font-extrabold pointer-events-none`}>
+          <span key={`new-${count}`} className={`absolute left-0 top-0 w-full h-full ${animating ? 'animate-pokeball-count-push-new' : ''}`} style={{fontWeight: 'bold', fontSize: '2.5rem', color: '#fff'}}>
             {count}
           </span>
         </span>
       </span>
       <div
         className={className + ' transition-transform duration-200 group-hover:scale-110 group-focus:scale-110'}
-        style={{ position: 'relative' }}
+        style={{ position: 'relative', width: '96px', height: '96px' }}
       >
         <span className="pokeball-inner" />
-        {className.includes('master') && (
-          <span className="pokeball-m">M</span>
-        )}
       </div>
-      <span className="text-xs text-white mt-2">{name}</span>
     </button>
   );
 }
 
-export default function PokeballFooter() {
+export default function PokeballSidebar() {
   return (
-    <footer className="w-full flex flex-row items-center justify-center py-6 bg-transparent">
-      {pokeballs.map(ball => (
-        <PokeballHTML key={ball.name} name={ball.name} className={ball.className} />
-      ))}
-    </footer>
+    <aside className="h-full flex flex-col items-end justify-center py-6 bg-transparent fixed left-0 top-0 z-40" style={{width: '120px'}}>
+      <div className="flex flex-col gap-12 items-end h-full justify-center">
+        {pokeballs.map((ball, idx) => (
+          <div className="relative" key={idx} style={{left: '-48px'}}>
+            <PokeballHTML className={ball.className} />
+          </div>
+        ))}
+      </div>
+    </aside>
   );
 }
