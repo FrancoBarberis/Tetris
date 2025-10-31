@@ -1,6 +1,22 @@
 import React, { useEffect, useRef } from "react";
 
 export default function PokemonBox({ pokemon }) {
+  useEffect(() => {
+    if (pokemon) {
+      const cryUrl = `https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`;
+      fetch(cryUrl, { method: 'HEAD' })
+        .then(res => {
+          if (res.ok) {
+            console.log(`Cry disponible para ${pokemon.name} (id ${pokemon.id}):`, cryUrl);
+          } else {
+            console.log(`Sin cry para ${pokemon.name} (id ${pokemon.id})`);
+          }
+        })
+        .catch(() => {
+          console.log(`Error al verificar cry para ${pokemon.name} (id ${pokemon.id})`);
+        });
+    }
+  }, [pokemon]);
   const audioRef = useRef(null);
   useEffect(() => {
     if (pokemon && audioRef.current) {

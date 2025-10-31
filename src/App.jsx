@@ -28,15 +28,14 @@ function App() {
           alt={pokemonActual.name}
           className="pointer-events-none select-none fixed z-0"
           style={{
-            height: '180vh',
+            height: '200vh',
             width: 'auto',
             opacity: 0.14,
             filter: 'drop-shadow(0 0 32px #000)',
             objectFit: 'contain',
-            minWidth: '110vw',
-            maxWidth: 'none',
             right: '-18vw',
-            bottom: '-40vh',
+            top: '50%',
+            transform: 'translateY(-50%)',
           }}
         />
       )}
