@@ -29,10 +29,15 @@ export default function PokemonBox({ pokemon }) {
     return <p className="text-white">Cargando Pokémon...</p>;
   }
 
-  // Calcular vida como suma de stats
-  const totalStats = pokemon.stats ? pokemon.stats.reduce((acc, stat) => acc + stat.base_stat, 0) : 0;
-  // La barra siempre inicia al 100%
+  // Vida: solo el stat de HP
+  const hpStat = pokemon.stats ? (pokemon.stats.find(stat => stat.stat.name === "hp")?.base_stat || 0) : 0;
   const percent = 100;
+
+  // Defense factor: suma de defensa y defensa especial
+  const defenseFactor = pokemon.stats
+    ? (pokemon.stats.find(stat => stat.stat.name === "defense")?.base_stat || 0)
+      + (pokemon.stats.find(stat => stat.stat.name === "special-defense")?.base_stat || 0)
+    : 0;
 
   return (
     <div className="bg-gray-900 rounded-lg shadow-lg p-6 flex flex-col items-center w-64 min-h-[270px]">
@@ -62,7 +67,7 @@ export default function PokemonBox({ pokemon }) {
       )}
       {/* Barra de vida */}
       <div className="w-full mt-2 mb-2">
-        <div className="text-xs text-green-300 font-bold mb-1 text-center">Vida total: {totalStats}</div>
+        <div className="text-xs text-green-300 font-bold mb-1 text-center">HP: {hpStat}</div>
         <div className="w-full h-5 bg-gray-700 rounded-full overflow-hidden border border-green-700">
           <div
             className="h-full bg-green-500 transition-all duration-500"
