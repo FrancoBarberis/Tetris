@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Board from "./components/Board";
 import Header from "./components/Header";
 import PokemonBox from "./components/PokemonBox";
-import PokeballSidebar from "./components/PokeballFooter";
+import PokeballSidebar from "./components/PokeballSidebar";
 import getRandomPokemon from "./utils/pokemons";
 
 function App() {
@@ -20,7 +20,7 @@ function App() {
   const [boardState, setBoardState] = useState({ nextPiece: null, score: 0, shapeColors: {} });
 
   return (
-  <div className="flex flex-col min-h-screen w-full relative bg-black overflow-hidden">
+    <div className="flex flex-col min-h-screen w-full relative bg-black overflow-hidden">
       {/* Sprite gigante y opaco a la derecha */}
       {pokemonActual?.sprites?.front_default && (
         <img
@@ -44,15 +44,13 @@ function App() {
         score={boardState.score}
         shapeColors={boardState.shapeColors}
       />
-  <div className="flex flex-row w-full flex-grow min-h-0 justify-center items-center">
-    <div className="game-container flex flex-row items-center justify-around w-full flex-grow min-h-0 gap-8 px-8 max-w-7xl mx-auto" style={{height: '100%'}}>
-          <PokeballSidebar />
-          <div className="flex-1 flex items-center justify-center">
-            <Board
-              pokemonBox={<PokemonBox pokemon={pokemonActual} />}
-              onStateChange={setBoardState}
-            />
-          </div>
+      <div className="flex flex-row w-full flex-grow min-h-0 justify-center items-center">
+        <PokeballSidebar />
+        <div className="game-container flex flex-1 items-center justify-center min-h-0 gap-8 px-8 max-w-7xl mx-auto" style={{height: '100%'}}>
+          <Board
+            pokemonBox={<PokemonBox pokemon={pokemonActual} />}
+            onStateChange={setBoardState}
+          />
         </div>
       </div>
     </div>

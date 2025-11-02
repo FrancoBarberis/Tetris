@@ -59,10 +59,10 @@ function PokeballHTML({ className }) {
 
 export default function PokeballSidebar() {
   return (
-    <aside className="h-full flex flex-col items-end justify-center py-6 bg-transparent fixed left-0 top-0 z-40" style={{width: '120px'}}>
-      <div className="flex flex-col gap-12 items-end h-full justify-center">
+    <aside className="flex flex-col items-end justify-center py-4 bg-transparent" style={{width: '100px', height: 'calc(100vh - 80px)'} /* 80px: altura estimada del header */}>
+      <div className="flex flex-col gap-6 items-end h-full justify-center">
         {pokeballs.map((ball, idx) => (
-          <div className="relative" key={idx} style={{left: '-48px'}}>
+          <div className="relative" key={idx} style={{left: '-32px'}}>
             <PokeballHTML className={ball.className} />
           </div>
         ))}
