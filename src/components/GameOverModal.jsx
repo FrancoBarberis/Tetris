@@ -17,12 +17,12 @@ export default function GameOverModal({ score, onRestart, title = 'Game Over' })
       {/* Modal visualmente consistente con el layout principal */}
       <div className="game-over-modal relative max-w-sm w-full mx-4 pointer-events-auto">
           <div className="bg-gradient-to-b from-black to-blue-900 rounded p-3 text-center">
-            <h2 className="text-2xl font-extrabold mb-4 text-white uppercase drop-shadow">{title}</h2>
-            <p className="mb-6 text-md text-white uppercase">Your score<br /><span className="font-bold text-2xl text-white drop-shadow">{score}</span></p>
+            <h2 className="text-2xl font-extrabold mb-4 text-gray-300 uppercase drop-shadow">{title}</h2>
+            <p className="mb-6 text-md text-gray-300 uppercase">Your score<br /><span className="font-bold text-2xl text-gray-300 drop-shadow">{score}</span></p>
             <div className="flex justify-center">
               <button
                 onClick={onRestart}
-                className="px-6 py-2 bg-gradient-to-r from-black via-blue-950 to-black text-white rounded font-semibold shadow hover:scale-105 transition-transform ring-2 ring-black/30 cursor-pointer"
+                className="px-6 py-2 bg-gradient-to-r from-black via-blue-950 to-black text-gray-300 rounded font-semibold shadow hover:scale-105 transition-transform ring-2 ring-black/30 cursor-pointer uppercase"
               >
                 Restart
               </button>

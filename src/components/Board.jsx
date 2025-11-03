@@ -328,7 +328,7 @@ export default function Board({ pokemonBox, onStateChange }) {
               muted
               loop
               playsInline
-              className="absolute inset-0 w-full h-full object-cover brightness-75"
+              className="absolute inset-0 w-full h-full object-cover brightness-75 contrast-125"
             />
 
             {/* Overlay para atenuar el video de fondo. Su opacidad baja cuando está el modal abierto para que el modal destaque pero el tablero siga visible */}
