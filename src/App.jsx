@@ -30,7 +30,7 @@ function App() {
           style={{
             height: '200vh',
             width: 'auto',
-            opacity: 0.14,
+            opacity: 0.3,
             filter: 'drop-shadow(0 0 32px #000)',
             objectFit: 'contain',
             right: '-18vw',

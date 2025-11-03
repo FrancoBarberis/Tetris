@@ -303,10 +303,10 @@ export default function Board({ pokemonBox, onStateChange }) {
   return (
     <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0">
       {/* Tablero y box del Pokémon */}
-  <div className="game-container flex flex-row items-center justify-around w-fit min-h-0 px-8 max-w-7xl mx-auto mt-10 gap-3">
+  <div className="game-container flex flex-row items-center justify-between w-fit max-w-7xl mx-auto gap-3">
         <div className="flex-1 flex items-center justify-center">
           <div
-            className="relative board grid overflow-hidden mb-6"
+            className="relative board grid overflow-hidden"
             style={{
               gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
               gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
