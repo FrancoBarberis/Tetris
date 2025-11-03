@@ -46,12 +46,10 @@ function App() {
       />
       <div className="application-container flex flex-row w-full flex-grow min-h-0 justify-center items-center">
         <PokeballSidebar />
-        <div className="game-container flex flex-1 items-center justify-center min-h-0 gap-8 px-8 max-w-7xl mx-auto" style={{height: '100%'}}>
           <Board
             pokemonBox={<PokemonBox pokemon={pokemonActual} />}
             onStateChange={setBoardState}
           />
-        </div>
       </div>
     </div>
   );

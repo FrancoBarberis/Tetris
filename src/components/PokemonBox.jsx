@@ -46,9 +46,9 @@ export default function PokemonBox({ pokemon }) {
         src={`https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`}
         preload="auto"
       />
-      <p className="text-yellow-300 font-bold mb-2">N° {pokemon.id}</p>
+      <p className="text-white font-bold mb-2">N° {pokemon.id}</p>
       {pokemon.sprites.front_default ? (
-        <div className="flex items-center justify-center w-40 h-40 bg-yellow-200 rounded border-4 border-red-500 mb-3">
+        <div className="flex items-center justify-center w-40 h-40 bg-yellow-200 rounded border-4 mb-3">
           <img
             src={pokemon.sprites.front_default}
             alt={pokemon.name}
@@ -66,9 +66,9 @@ export default function PokemonBox({ pokemon }) {
         </div>
       )}
       {/* Barra de vida */}
-      <div className="w-full mt-2 mb-2">
-        <div className="text-xs text-green-300 font-bold mb-1 text-center">HP: {hpStat}</div>
-        <div className="w-full h-5 bg-gray-700 rounded-full overflow-hidden border border-green-700">
+      <div className="w-full">
+        <div className="text-xs text-white font-bold mb-1 text-center">HP: {hpStat}</div>
+        <div className="w-full h-5 bg-gray-700 rounded-xs overflow-hidden border-black border-2">
           <div
             className="h-full bg-green-500 transition-all duration-500"
             style={{ width: `${percent}%` }}

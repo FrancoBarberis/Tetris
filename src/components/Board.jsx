@@ -289,7 +289,7 @@ export default function Board({ pokemonBox, onStateChange }) {
     O: "bg-yellow-500 text-black",
     T: "bg-indigo-700 text-white",
     S: "bg-emerald-600 text-white",
-    Z: "bg-pink-600 text-white",
+    Z: "bg-red-600 text-white",
     J: "bg-blue-700 text-white",
     L: "bg-amber-600 text-black",
   };
@@ -303,7 +303,7 @@ export default function Board({ pokemonBox, onStateChange }) {
   return (
     <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0">
       {/* Tablero y box del Pokémon */}
-  <div className="game-container flex flex-row items-center justify-around w-full flex-grow min-h-0 gap-8 px-8 max-w-7xl mx-auto mt-10" style={{height: '100%'}}>
+  <div className="game-container flex flex-row items-center justify-around w-fit min-h-0 px-8 max-w-7xl mx-auto mt-10 gap-3">
         <div className="flex-1 flex items-center justify-center">
           <div
             className="relative board grid overflow-hidden mb-6"
@@ -350,7 +350,7 @@ export default function Board({ pokemonBox, onStateChange }) {
               return (
                 <div
                   key={`${rowIndex}-${colIndex}`}
-                  className={`border border-black opacity-100 contrast-200 w-7 h-7 ${cellType ? shapeColors[cellType] : "bg-transparent"}${isFading ? ' fade-out-col' : ''}`}
+                  className={`cell border border-black opacity-100 contrast-200 w-7 h-7 ${cellType ? shapeColors[cellType] : "bg-transparent"}${isFading ? ' fade-out-col' : ''}`}
                 />
               );
             })
