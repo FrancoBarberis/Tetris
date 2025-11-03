@@ -40,13 +40,13 @@ export default function PokemonBox({ pokemon }) {
     : 0;
 
   return (
-    <div className="bg-blue-950 rounded p-6 flex flex-col items-center w-fit">
+    <div className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-6 flex flex-col items-center w-fit">
       <audio
         ref={audioRef}
         src={`https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`}
         preload="auto"
       />
-      <p className="text-white font-bold mb-2">N° {pokemon.id}</p>
+      <p className="text-gray-200 font-bold text-2xl mb-2">N° {pokemon.id}</p>
       {pokemon.sprites.front_default ? (
         <div className="flex items-center justify-center w-40 h-40 bg-yellow-200 rounded border-4 mb-3">
           <img
@@ -66,16 +66,16 @@ export default function PokemonBox({ pokemon }) {
         </div>
       )}
       {/* Barra de vida */}
-      <div className="w-full">
-        <div className="text-xs text-white font-bold mb-1 text-center">HP: {hpStat}</div>
-        <div className="w-full h-5 bg-gray-700 rounded-xs overflow-hidden border-black border-2">
+      <div className="w-full ">
+        <div className="text-md text-gray-300 font-bold mb-1 text-center">HP: {hpStat}</div>
+        <div className="w-full h-6 bg-gray-700 rounded-xs overflow-hidden border-black border-2">
           <div
-            className="h-full bg-green-500 transition-all duration-500"
+            className="h-full bg-green-600 transition-all duration-500"
             style={{ width: `${percent}%` }}
           />
         </div>
       </div>
-      <p className="text-white capitalize mt-1 mb-0">{pokemon.name}</p>
+      <p className="text-gray-300 capitalize mt-1 mb-0">{pokemon.name}</p>
     </div>
   );
 }

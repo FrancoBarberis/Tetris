@@ -43,29 +43,30 @@ function PokeballHTML({ className }) {
         className="counter flex items-center justify-center h-fit w-fit gap-0"
       >
         <span
-          style={{ fontWeight: "bold", fontSize: "1.5rem", color: "#fff" }}
+          className="text-gray-300"
+          style={{ fontWeight: "bold", fontSize: "1.5rem" }}
         >
           x
         </span>
         <span
-          className="ball-counter w-14 h-14"
+          className="ball-counter text-gray-300 w-14 h-14"
           style={{ position: "relative" }}
         >
           {prevCount !== null && animating && (
             <span
               key={`old-${prevCount}`}
-              className=" w-fit h-fit animate-pokeball-count-push-old"
-              style={{ fontWeight: "bold", fontSize: "2.5rem", color: "#fff" }}
+              className=" w-fit h-fit animate-pokeball-count-push-old text-gray-300"
+              style={{ fontWeight: "bold", fontSize: "2.5rem" }}
             >
               {prevCount}
             </span>
           )}
           <span
             key={`new-${count}`}
-            className={`absolute left-0 top-0 w-full h-full ${
+            className={`absolute left-0 top-0 w-full h-full text-gray-300 ${
               animating ? "animate-pokeball-count-push-new" : ""
             }`}
-            style={{ fontWeight: "bold", fontSize: "2.5rem", color: "#fff" }}
+            style={{ fontWeight: "bold", fontSize: "2.5rem" }}
           >
             {count}
           </span>
@@ -86,7 +87,7 @@ function PokeballHTML({ className }) {
 
 export default function PokeballSidebar() {
   return (
-    <div className="pokeball-sidebar flex flex-col gap-2 items-end h-fit w-fit justify-start mt-2">
+    <div className="pokeball-sidebar flex flex-col gap-3 items-end h-fit w-fit justify-start mt-2">
       {pokeballs.map((ball, idx) => (
         <div className="bg-gradient-to-l from-black via-red-900 to-blue-950 py-2 pl-6 pr-3 " key={idx}
         style={{ borderTopRightRadius: "3%", borderBottomRightRadius: "3%" }}>

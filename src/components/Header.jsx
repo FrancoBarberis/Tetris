@@ -9,9 +9,8 @@ export default function Header({ nextPiece, score, shapeColors, previewCell = 18
         src={Logo}
         alt="Pokétris Logo"
       />
-      <div className="flex flex-col items-center justify-center" >
-        <div className="box-next-piece rounded bg-gradient-to-b from-blue-900 via-black to-blue-900  border-2 border-black shadow-md flex flex-col items-center justify-center" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative' }}>
-          <span className=" text-md font-bold uppercase tracking-wide text-white" style={{ fontFamily: "PokeFont, sans-serif" }}>Next piece</span>
+        <div className="box-next-piece rounded-xs bg-gradient-to-b from-blue-900  to-black shadow-md flex flex-col items-center justify-center py-1" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative' }}>
+          <span className=" text-md font-bold uppercase tracking-wide text-gray-300" style={{ fontFamily: "PokeFont, sans-serif" }}>Next piece</span>
           <div style={{ width: `${previewBox}px`, height: `${previewBox}px`, position: 'relative' }}>
             {nextPiece && nextPiece.matrix ? (
               (() => {
@@ -43,11 +42,10 @@ export default function Header({ nextPiece, score, shapeColors, previewCell = 18
               <div className="flex items-center justify-center w-full h-full text-xs text-white/70">Cargando...</div>
             )}
           </div>
-        </div>
       </div>
-      <div className="flex items-center gap-3 mt-2">
-        <span className="text-md font-extrabold uppercase opacity-90 text-pink-200 drop-shadow-lg">Score</span>
-        <div className="score-box text-2xl font-black bg-gradient-to-b from-black to-blue-900 text-white px-2 py-1 rounded-s shadow ring-pink-300/30 text-center mr-0" style={{ fontFamily: "PokeFont, sans-serif", minWidth: 100 }}>{score}</div>
+      <div className="flex items-center  mt-2 bg-gradient-to-l from-black to-blue-900 pl-4 py-2 rounded-xs">
+        <span className="text-md font-extrabold uppercase text-gray-300 drop-shadow-lg">Score</span>
+        <div className="score-box text-2xl font-black py-1 rounded-s shadow ring-pink-300/30 text-center mr-0 text-gray-300" style={{ fontFamily: "PokeFont, sans-serif", minWidth: 100 }}>{score}</div>
       </div>
     </header>
   );

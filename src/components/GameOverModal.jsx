@@ -22,7 +22,7 @@ export default function GameOverModal({ score, onRestart, title = 'Game Over' })
             <div className="flex justify-center">
               <button
                 onClick={onRestart}
-                className="px-6 py-2 bg-gradient-to-r from-black via-blue-950 to-black text-white rounded font-semibold shadow hover:scale-105 transition-transform ring-2 ring-pink-300/30 cursor-pointer"
+                className="px-6 py-2 bg-gradient-to-r from-black via-blue-950 to-black text-white rounded font-semibold shadow hover:scale-105 transition-transform ring-2 ring-black/30 cursor-pointer"
               >
                 Restart
               </button>

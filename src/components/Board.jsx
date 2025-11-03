@@ -5,16 +5,14 @@ import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
 
-
 // CORREGIR:
-// CUANDO SE LIMPIA UNA COLUMNA Y LAS PIEZAS SOBRANTES SE MUEVEN A LA DERECHA, SI SE FORMA OTRA COLUMNA COMPLETA, ESTA NO SE LIMPIA HASTA QUE SE SOLIDIFICA LA PIEZA SIGUIENTE. DEBERÍA LIMPIARSE INMEDIATAMENTE.
+// CUANDO SE LIMPIA UNA COLUMNA Y LAS PIEZAS SOBRANTES SE MUEVEN A LA DERECHA, SI SE FORMA OTRA COLUMNA COMPLETA, ESTA NO SE LIMPIA
 
 export default function Board({ pokemonBox, onStateChange }) {
   const rows = 12;
   const cols = 25;
-  // Preview config (ajustado para que las celdas del preview sean w-6 h-6 => 24px)
-  const previewCell = 24; // px (w-6 h-6)
-  const previewBox = 72; // px caja fija
+  const previewCell = 24;
+  const previewBox = 72;
 
   const [activePiece, setActivePiece] = useState(null);
   const [activePosition, setActivePosition] = useState(null);
@@ -30,7 +28,10 @@ export default function Board({ pokemonBox, onStateChange }) {
     // usando el ancho de la pieza para que ninguna celda nazca dentro
     const shapeWidth = nextPiece.matrix[0].length;
     const shapeHeight = nextPiece.matrix.length;
-    const startPos = { x: -shapeWidth, y: Math.max(Math.floor((rows - shapeHeight) / 2), 0) };
+    const startPos = {
+      x: -shapeWidth,
+      y: Math.max(Math.floor((rows - shapeHeight) / 2), 0),
+    };
 
     // comprobar colisión en spawn: solo consideramos solapamiento con celdas
     // ya ocupadas dentro de los límites del tablero. Si la pieza está
@@ -178,12 +179,14 @@ export default function Board({ pokemonBox, onStateChange }) {
     }
 
     if (colsToClear.length > 0) {
-      setScore(prev => prev + colsToClear.length * 100);
+      setScore((prev) => prev + colsToClear.length * 100);
       // Marcar las celdas a eliminar con fade-out antes de borrarlas
-      setBoard(prev => {
+      setBoard((prev) => {
         return prev.map((row, rowIdx) =>
           row.map((cell, colIdx) =>
-            colsToClear.includes(colIdx) && cell ? { type: cell, fading: true } : cell
+            colsToClear.includes(colIdx) && cell
+              ? { type: cell, fading: true }
+              : cell
           )
         );
       });
@@ -235,7 +238,11 @@ export default function Board({ pokemonBox, onStateChange }) {
       if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
         setActivePiece(rotatePiece(activePiece));
       }
-      if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
+      if (
+        event.key === "ArrowRight" ||
+        event.key === "d" ||
+        event.key === "D"
+      ) {
         if (canMove({ x: activePosition.x + 1, y: activePosition.y })) {
           setActivePosition((pos) => ({ x: pos.x + 1, y: pos.y }));
         }
@@ -279,7 +286,7 @@ export default function Board({ pokemonBox, onStateChange }) {
     if (gameOver) return;
 
     const scoreInterval = setInterval(() => {
-      setScore(prev => prev + 1);
+      setScore((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(scoreInterval);
   }, [gameOver]);
@@ -303,7 +310,7 @@ export default function Board({ pokemonBox, onStateChange }) {
   return (
     <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0">
       {/* Tablero y box del Pokémon */}
-  <div className="game-container flex flex-row items-center justify-between w-fit max-w-7xl mx-auto gap-3">
+      <div className="game-container flex flex-row items-center justify-between w-fit max-w-7xl mx-auto gap-3">
         <div className="flex-1 flex items-center justify-center">
           <div
             className="relative board grid overflow-hidden"
@@ -325,45 +332,53 @@ export default function Board({ pokemonBox, onStateChange }) {
             />
 
             {/* Overlay para atenuar el video de fondo. Su opacidad baja cuando está el modal abierto para que el modal destaque pero el tablero siga visible */}
-            <div className={`absolute inset-0 bg-black pointer-events-none ${gameOver ? 'opacity-20' : 'opacity-40'}`} />
-          {board.map((row, rowIndex) =>
-            row.map((cell, colIndex) => {
-              let value = cell;
+            <div
+              className={`absolute inset-0 bg-black pointer-events-none ${
+                gameOver ? "opacity-20" : "opacity-40"
+              }`}
+            />
+            {board.map((row, rowIndex) =>
+              row.map((cell, colIndex) => {
+                let value = cell;
 
-              if (activePiece && activePosition) {
-                for (let r = 0; r < activePiece.matrix.length; r++) {
-                  for (let c = 0; c < activePiece.matrix[r].length; c++) {
-                    if (activePiece.matrix[r][c]) {
-                      const y = activePosition.y + r;
-                      const x = activePosition.x + c;
-                      if (y === rowIndex && x === colIndex) {
-                        value = activePiece.type;
+                if (activePiece && activePosition) {
+                  for (let r = 0; r < activePiece.matrix.length; r++) {
+                    for (let c = 0; c < activePiece.matrix[r].length; c++) {
+                      if (activePiece.matrix[r][c]) {
+                        const y = activePosition.y + r;
+                        const x = activePosition.x + c;
+                        if (y === rowIndex && x === colIndex) {
+                          value = activePiece.type;
+                        }
                       }
                     }
                   }
                 }
-              }
 
-              // Si la celda es un objeto con fading, aplicar la clase de animación
-              const isFading = value && typeof value === 'object' && value.fading;
-              const cellType = isFading ? value.type : value;
-              return (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className={`cell border border-black opacity-100 contrast-200 w-7 h-7 ${cellType ? shapeColors[cellType] : "bg-transparent"}${isFading ? ' fade-out-col' : ''}`}
-                />
-              );
-            })
-          )}
+                // Si la celda es un objeto con fading, aplicar la clase de animación
+                const isFading =
+                  value && typeof value === "object" && value.fading;
+                const cellType = isFading ? value.type : value;
+                return (
+                  //CELDAS
+                  <div
+                    key={`${rowIndex}-${colIndex}`}
+                    className={`cell border border-black opacity-100 contrast-200 w-[4.5vh] h-[4.5vh] ${
+                      cellType ? shapeColors[cellType] : "bg-transparent"
+                    }${isFading ? " fade-out-col" : ""}`}
+                  />
+                );
+              })
+            )}
           </div>
         </div>
         {/* Box del Pokémon a la derecha del tablero */}
-        <div className="flex items-center justify-center h-full">{pokemonBox}</div>
+        <div className="flex items-center justify-center h-full">
+          {pokemonBox}
+        </div>
       </div>
       {/* El tablero siempre se renderiza; el modal aparece encima como un popup */}
-      {gameOver && (
-        <GameOverModal score={score} onRestart={restartGame} />
-      )}
+      {gameOver && <GameOverModal score={score} onRestart={restartGame} />}
     </div>
   );
 }
