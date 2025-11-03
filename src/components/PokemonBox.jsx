@@ -40,7 +40,7 @@ export default function PokemonBox({ pokemon }) {
     : 0;
 
   return (
-    <div className="bg-gray-900 rounded-lg p-6 flex flex-col items-center w-fit">
+    <div className="bg-gray-900 rounded p-6 flex flex-col items-center w-fit">
       <audio
         ref={audioRef}
         src={`https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`}

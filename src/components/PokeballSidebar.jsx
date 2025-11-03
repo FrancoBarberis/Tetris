@@ -29,7 +29,7 @@ function PokeballHTML({ className }) {
 
   return (
     <button
-      className="flex flex-row items-center focus:outline-none group"
+      className="flex flex-row items-center"
       style={{
         background: "none",
         border: "none",
@@ -40,18 +40,10 @@ function PokeballHTML({ className }) {
       onClick={handleClick}
     >
       <span
-        className="counter flex items-center justify-center h-fit w-auto"
-        style={{
-          height: "3.5rem",
-          fontWeight: "bold",
-          fontSize: "2.5rem",
-          color: "#fff",
-          letterSpacing: "2px",
-        }}
+        className="counter flex items-center justify-center h-fit w-fit gap-0"
       >
         <span
-          className="mr-2"
-          style={{ fontWeight: "bold", fontSize: "2.5rem", color: "#fff" }}
+          style={{ fontWeight: "bold", fontSize: "1.5rem", color: "#fff" }}
         >
           x
         </span>
@@ -62,7 +54,7 @@ function PokeballHTML({ className }) {
           {prevCount !== null && animating && (
             <span
               key={`old-${prevCount}`}
-              className="absolute left-0 top-0 w-full h-full animate-pokeball-count-push-old"
+              className=" w-fit h-fit animate-pokeball-count-push-old"
               style={{ fontWeight: "bold", fontSize: "2.5rem", color: "#fff" }}
             >
               {prevCount}
@@ -84,7 +76,7 @@ function PokeballHTML({ className }) {
           className +
           " transition-transform duration-200 group-hover:scale-110 group-focus:scale-110"
         }
-        style={{ position: "relative", width: "96px", height: "96px" }}
+        style={{ position: "relative", width: "86px", height: "86px" }}
       >
         <span className="pokeball-inner" />
       </div>
@@ -94,9 +86,9 @@ function PokeballHTML({ className }) {
 
 export default function PokeballSidebar() {
   return (
-    <div className="flex flex-col gap-3 items-end h-fit w-fit justify-start mt-5">
+    <div className="pokeball-sidebar flex flex-col gap-2 items-end h-fit w-fit justify-start mt-2">
       {pokeballs.map((ball, idx) => (
-        <div className="bg-amber-500 py-2 px-6 pr-3 " key={idx}
+        <div className="bg-gradient-to-l from-black to-yellow-300 py-2 px-6 pr-3 " key={idx}
         style={{ borderTopRightRadius: "3%", borderBottomRightRadius: "3%" }}>
           <PokeballHTML className={ball.className} />
         </div>
