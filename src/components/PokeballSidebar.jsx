@@ -88,7 +88,7 @@ export default function PokeballSidebar() {
   return (
     <div className="pokeball-sidebar flex flex-col gap-2 items-end h-fit w-fit justify-start mt-2">
       {pokeballs.map((ball, idx) => (
-        <div className="bg-gradient-to-l from-black to-yellow-300 py-2 px-6 pr-3 " key={idx}
+        <div className="bg-gradient-to-l from-black via-red-900 to-blue-950 py-2 pl-6 pr-3 " key={idx}
         style={{ borderTopRightRadius: "3%", borderBottomRightRadius: "3%" }}>
           <PokeballHTML className={ball.className} />
         </div>
