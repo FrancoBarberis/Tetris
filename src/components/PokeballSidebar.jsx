@@ -29,27 +29,62 @@ function PokeballHTML({ className }) {
 
   return (
     <button
-      className="flex flex-col items-center mx-6 focus:outline-none group"
-      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+      className="flex flex-row items-center focus:outline-none group"
+      style={{
+        background: "none",
+        border: "none",
+        padding: 0,
+        cursor: "pointer",
+      }}
       tabIndex={0}
       onClick={handleClick}
     >
-      <span className="flex items-center justify-center mb-2" style={{height: '3.5rem', fontWeight: 'bold', fontSize: '2.5rem', color: '#fff', letterSpacing: '2px'}}>
-        <span className="mr-2" style={{fontWeight: 'bold', fontSize: '2.5rem', color: '#fff'}}>x</span>
-        <span className="ball-counter relative inline-block w-14 h-14 overflow-visible" style={{position: 'relative'}}>
+      <span
+        className="counter flex items-center justify-center h-fit w-auto"
+        style={{
+          height: "3.5rem",
+          fontWeight: "bold",
+          fontSize: "2.5rem",
+          color: "#fff",
+          letterSpacing: "2px",
+        }}
+      >
+        <span
+          className="mr-2"
+          style={{ fontWeight: "bold", fontSize: "2.5rem", color: "#fff" }}
+        >
+          x
+        </span>
+        <span
+          className="ball-counter w-14 h-14"
+          style={{ position: "relative" }}
+        >
           {prevCount !== null && animating && (
-            <span key={`old-${prevCount}`} className="absolute left-0 top-0 w-full h-full animate-pokeball-count-push-old" style={{fontWeight: 'bold', fontSize: '2.5rem', color: '#fff'}}>
+            <span
+              key={`old-${prevCount}`}
+              className="absolute left-0 top-0 w-full h-full animate-pokeball-count-push-old"
+              style={{ fontWeight: "bold", fontSize: "2.5rem", color: "#fff" }}
+            >
               {prevCount}
             </span>
           )}
-          <span key={`new-${count}`} className={`absolute left-0 top-0 w-full h-full ${animating ? 'animate-pokeball-count-push-new' : ''}`} style={{fontWeight: 'bold', fontSize: '2.5rem', color: '#fff'}}>
+          <span
+            key={`new-${count}`}
+            className={`absolute left-0 top-0 w-full h-full ${
+              animating ? "animate-pokeball-count-push-new" : ""
+            }`}
+            style={{ fontWeight: "bold", fontSize: "2.5rem", color: "#fff" }}
+          >
             {count}
           </span>
         </span>
       </span>
       <div
-        className={className + ' transition-transform duration-200 group-hover:scale-110 group-focus:scale-110'}
-        style={{ position: 'relative', width: '96px', height: '96px' }}
+        className={
+          className +
+          " transition-transform duration-200 group-hover:scale-110 group-focus:scale-110"
+        }
+        style={{ position: "relative", width: "96px", height: "96px" }}
       >
         <span className="pokeball-inner" />
       </div>
@@ -59,14 +94,12 @@ function PokeballHTML({ className }) {
 
 export default function PokeballSidebar() {
   return (
-    <aside className="flex flex-col items-end justify-center py-4 bg-transparent" style={{width: '100px', height: 'calc(100vh - 80px)'} /* 80px: altura estimada del header */}>
-      <div className="flex flex-col gap-6 items-end h-full justify-center">
-        {pokeballs.map((ball, idx) => (
-          <div className="relative" key={idx} style={{left: '-32px'}}>
-            <PokeballHTML className={ball.className} />
-          </div>
-        ))}
-      </div>
-    </aside>
+    <div className="flex flex-col gap-3 items-end h-fit w-fit justify-start mt-5">
+      {pokeballs.map((ball, idx) => (
+        <div className="bg-amber-500 py-2 px-10 pr-3" key={idx}>
+          <PokeballHTML className={ball.className} />
+        </div>
+      ))}
+    </div>
   );
 }
