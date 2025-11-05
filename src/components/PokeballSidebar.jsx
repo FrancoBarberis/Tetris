@@ -77,9 +77,10 @@ function PokeballHTML({ className }) {
           className +
           " transition-transform duration-200 group-hover:scale-110 group-focus:scale-110"
         }
-        style={{ position: "relative", width: "86px", height: "86px" }}
+        style={{ position: "relative", width: "10vh", height: "10vh" }}
       >
-        <span className="pokeball-inner" />
+        <span className="pokeball-inner"
+        style={{width: "30%", height: "30%"}} />
       </div>
     </button>
   );
