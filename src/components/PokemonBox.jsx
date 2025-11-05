@@ -56,7 +56,7 @@ export default function PokemonBox({ pokemon }) {
           src={`https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`}
           preload="auto"
         />
-  <p className="text-yellow-600 font-bold text-2xl mb-2 drop-shadow">N° {pokemon.id}</p>
+  <p className="text-yellow-600 font-bold text-2xl mb-2 drop-shadow cursor-default">N° {pokemon.id}</p>
         {pokemon.sprites.front_default ? (
           <div className="flex items-center justify-center w-40 h-40 bg-yellow-200 rounded border-4 border-yellow-400 mb-3 shadow-md">
             <img
@@ -77,7 +77,7 @@ export default function PokemonBox({ pokemon }) {
         )}
         {/* Barra de vida */}
         <div className="w-full ">
-          <div className="text-md text-green-200 font-bold mb-1 text-center drop-shadow">HP: {hpStat}</div>
+          <div className="text-md text-green-200 font-bold mb-1 text-center drop-shadow cursor-default">HP: {hpStat}</div>
           <div className="w-full h-6 bg-gray-700 rounded-xs overflow-hidden border-black border-2">
             <div
               className="h-full bg-green-300 transition-all duration-500 shadow"
@@ -85,13 +85,13 @@ export default function PokemonBox({ pokemon }) {
             />
           </div>
         </div>
-  <p className="text-yellow-700 capitalize mt-1 mb-0 font-bold drop-shadow">{pokemon.name}</p>
+  <p className="text-yellow-700 capitalize mt-1 mb-0 font-bold drop-shadow cursor-default">{pokemon.name}</p>
         {/* Tipos al final */}
         <div className="flex gap-2 mt-3">
           {types.map(t => (
             <span
               key={t.type.name}
-              className="px-3 py-1 rounded text-xs font-bold uppercase shadow"
+              className="px-3 py-1 rounded text-xs font-bold uppercase shadow cursor-default"
               style={{ background: TYPE_COLORS[t.type.name] || '#fff', color: '#222', letterSpacing: '1px', filter: 'brightness(1.1)' }}
             >
               {TYPE_NAMES[t.type.name] || t.type.name}

@@ -21,13 +21,13 @@ export default function Header({ nextPiece, score, shapeColors, previewCell = 18
   const t = translations[language];
   
   return (
-    <header className="w-full h-fit flex justify-between items-center bg-gradient-to-r from-red-900 via-blue-900 to-black text-white py-4" >
+    <header className="w-full h-fit max-h-25 flex justify-between items-center bg-gradient-to-r from-red-900 via-blue-900 to-black text-white py-4" >
       <img
         className="h-15 ml-3 object-contain"
         src={Logo}
         alt="Pokétris Logo"
       />
-        <div className="box-next-piece rounded-xs bg-gradient-to-b from-blue-900  to-black shadow-md flex flex-col items-center justify-center py-1" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative' }}>
+        <div className="box-next-piece rounded-xs bg-gradient-to-b from-blue-900  to-black shadow-md flex flex-col items-center justify-center py-1 cursor-default" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative' }}>
           <span className="text-md font-bold uppercase tracking-wide text-gray-300 px-2 text-center" style={{ fontFamily: "PokeFont, sans-serif", fontSize: 'clamp(0.65rem, 1vw, 0.875rem)' }}>{t.nextPiece}</span>
           <div style={{ width: `${previewBox}px`, height: `${previewBox}px`, position: 'relative' }}>
             {nextPiece && nextPiece.matrix ? (
@@ -61,7 +61,7 @@ export default function Header({ nextPiece, score, shapeColors, previewCell = 18
             )}
           </div>
       </div>
-      <div className="flex items-center  mt-2 bg-gradient-to-l from-black to-blue-900 pl-4 py-2 rounded-xs">
+      <div className="flex items-center  mt-2 bg-gradient-to-l from-black to-blue-900 pl-4 py-2 rounded-xs cursor-default">
         <span className="text-md font-extrabold uppercase text-gray-300 drop-shadow-lg">{t.score}</span>
         <div className="score-box text-2xl font-black py-1 rounded-s shadow ring-pink-300/30 text-center mr-0 text-gray-300" style={{ fontFamily: "PokeFont, sans-serif", minWidth: 100 }}>{score}</div>
       </div>
