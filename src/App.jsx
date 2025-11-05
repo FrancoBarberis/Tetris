@@ -87,7 +87,7 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen w-full relative bg-black overflow-hidden">
-      {/* Sprite gigante y opaco a la derecha */}
+      {/* Giant and faded sprite on the right */}
       {pokemonActual?.sprites?.front_default && (
         <img
           src={pokemonActual.sprites.front_default}

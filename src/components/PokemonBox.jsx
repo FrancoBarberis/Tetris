@@ -1,8 +1,12 @@
 
 import React, { useEffect, useRef } from "react";
-import { TYPE_COLORS, TYPE_NAMES_ES } from "../utils/typeColors";
+import { TYPE_COLORS, TYPE_NAMES_ES, TYPE_NAMES_EN } from "../utils/typeColors";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export default function PokemonBox({ pokemon }) {
+  const { language } = useLanguage();
+  const TYPE_NAMES = language === 'es' ? TYPE_NAMES_ES : TYPE_NAMES_EN;
+  
   useEffect(() => {
     if (pokemon) {
       const cryUrl = `https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`;
@@ -28,7 +32,7 @@ export default function PokemonBox({ pokemon }) {
   }, [pokemon]);
 
   if (!pokemon) {
-    return <p className="text-white">Cargando Pokémon...</p>;
+    return <p className="text-white">{language === 'es' ? 'Cargando Pokémon...' : 'Loading Pokémon...'}</p>;
   }
 
   // Vida: solo el stat de HP
@@ -90,7 +94,7 @@ export default function PokemonBox({ pokemon }) {
               className="px-3 py-1 rounded text-xs font-bold uppercase shadow"
               style={{ background: TYPE_COLORS[t.type.name] || '#fff', color: '#222', letterSpacing: '1px', filter: 'brightness(1.1)' }}
             >
-              {TYPE_NAMES_ES[t.type.name] || t.type.name}
+              {TYPE_NAMES[t.type.name] || t.type.name}
             </span>
           ))}
         </div>

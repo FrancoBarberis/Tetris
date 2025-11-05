@@ -1,7 +1,25 @@
 import React from "react";
 import Logo from "../assets/poketrisLOGO.png";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export default function Header({ nextPiece, score, shapeColors, previewCell = 18, previewBox = 50 }) {
+  const { language } = useLanguage();
+  
+  const translations = {
+    en: {
+      nextPiece: "Next piece",
+      score: "Score",
+      loading: "Loading..."
+    },
+    es: {
+      nextPiece: "Siguiente pieza",
+      score: "Puntaje",
+      loading: "Cargando..."
+    }
+  };
+  
+  const t = translations[language];
+  
   return (
     <header className="w-full h-fit flex justify-between items-center bg-gradient-to-r from-red-900 via-blue-900 to-black text-white py-4" >
       <img
@@ -10,7 +28,7 @@ export default function Header({ nextPiece, score, shapeColors, previewCell = 18
         alt="Pokétris Logo"
       />
         <div className="box-next-piece rounded-xs bg-gradient-to-b from-blue-900  to-black shadow-md flex flex-col items-center justify-center py-1" style={{ width: `${previewBox + 64}px`, minHeight: `${previewBox + 8}px`, position: 'relative' }}>
-          <span className=" text-md font-bold uppercase tracking-wide text-gray-300" style={{ fontFamily: "PokeFont, sans-serif" }}>Next piece</span>
+          <span className="text-md font-bold uppercase tracking-wide text-gray-300 px-2 text-center" style={{ fontFamily: "PokeFont, sans-serif", fontSize: 'clamp(0.65rem, 1vw, 0.875rem)' }}>{t.nextPiece}</span>
           <div style={{ width: `${previewBox}px`, height: `${previewBox}px`, position: 'relative' }}>
             {nextPiece && nextPiece.matrix ? (
               (() => {
@@ -39,12 +57,12 @@ export default function Header({ nextPiece, score, shapeColors, previewCell = 18
                 );
               })()
             ) : (
-              <div className="flex items-center justify-center w-full h-full text-xs text-white/70">Cargando...</div>
+              <div className="flex items-center justify-center w-full h-full text-xs text-white/70">{t.loading}</div>
             )}
           </div>
       </div>
       <div className="flex items-center  mt-2 bg-gradient-to-l from-black to-blue-900 pl-4 py-2 rounded-xs">
-        <span className="text-md font-extrabold uppercase text-gray-300 drop-shadow-lg">Score</span>
+        <span className="text-md font-extrabold uppercase text-gray-300 drop-shadow-lg">{t.score}</span>
         <div className="score-box text-2xl font-black py-1 rounded-s shadow ring-pink-300/30 text-center mr-0 text-gray-300" style={{ fontFamily: "PokeFont, sans-serif", minWidth: 100 }}>{score}</div>
       </div>
     </header>

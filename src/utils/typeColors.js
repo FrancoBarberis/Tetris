@@ -18,6 +18,28 @@ export const TYPE_NAMES_ES = {
   steel: 'Acero',
   fairy: 'Hada',
 };
+
+export const TYPE_NAMES_EN = {
+  normal: 'Normal',
+  fire: 'Fire',
+  water: 'Water',
+  electric: 'Electric',
+  grass: 'Grass',
+  ice: 'Ice',
+  fighting: 'Fighting',
+  poison: 'Poison',
+  ground: 'Ground',
+  flying: 'Flying',
+  psychic: 'Psychic',
+  bug: 'Bug',
+  rock: 'Rock',
+  ghost: 'Ghost',
+  dragon: 'Dragon',
+  dark: 'Dark',
+  steel: 'Steel',
+  fairy: 'Fairy',
+};
+
 // Mapeo de colores clásicos para los tipos de Pokémon
 export const TYPE_COLORS = {
   normal: '#A8A77A',

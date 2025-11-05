@@ -5,8 +5,8 @@ import BoardBackground from "../assets/Eevee 4k.jpg";
 import BoardVideo from "../assets/EeveeVid.mp4";
 import Logo from "../assets/poketrisLOGO.png";
 
-// CORREGIR:
-// CUANDO SE LIMPIA UNA COLUMNA Y LAS PIEZAS SOBRANTES SE MUEVEN A LA DERECHA, SI SE FORMA OTRA COLUMNA COMPLETA, ESTA NO SE LIMPIA
+// TODO:
+// WHEN A COLUMN IS CLEARED AND THE REMAINING PIECES MOVE TO THE RIGHT, IF ANOTHER FULL COLUMN IS FORMED, IT DOES NOT GET CLEARED
 
 export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   const rows = 12;
