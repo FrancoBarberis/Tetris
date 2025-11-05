@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import LoadingScreen from "./components/LoadingScreen";
+import TutorialScreen from "./components/TutorialScreen";
 import { loadResources } from "./components/ResourceLoader";
 import Board from "./components/Board";
 import Header from "./components/Header";
@@ -9,6 +10,7 @@ import getRandomPokemon from "./utils/pokemons";
 
 function App() {
   const [pokemonActual, setPokemonActual] = useState(null);
+  const [showTutorial, setShowTutorial] = useState(false);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [displayProgress, setDisplayProgress] = useState(0); // para animar suavemente
@@ -60,6 +62,7 @@ function App() {
   useEffect(() => {
     if (displayProgress === 100 && gifCyclesAfterFull >= 2 && loading) {
       setLoading(false);
+      setShowTutorial(true);
       async function fetchPokemon() {
         const data = await getRandomPokemon();
         setPokemonActual(data);
@@ -110,8 +113,12 @@ function App() {
           <Board
             pokemonBox={<PokemonBox pokemon={pokemonActual} />}
             onStateChange={setBoardState}
+            isPaused={showTutorial}
           />
       </div>
+      {showTutorial && (
+        <TutorialScreen onContinue={() => setShowTutorial(false)} />
+      )}
     </div>
   );
 }

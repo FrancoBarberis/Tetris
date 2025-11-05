@@ -8,7 +8,7 @@ import Logo from "../assets/poketrisLOGO.png";
 // CORREGIR:
 // CUANDO SE LIMPIA UNA COLUMNA Y LAS PIEZAS SOBRANTES SE MUEVEN A LA DERECHA, SI SE FORMA OTRA COLUMNA COMPLETA, ESTA NO SE LIMPIA
 
-export default function Board({ pokemonBox, onStateChange }) {
+export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   const rows = 12;
   const cols = 25;
   const previewCell = 24;
@@ -263,8 +263,8 @@ export default function Board({ pokemonBox, onStateChange }) {
   });
 
   useEffect(() => {
-    // Pausar el bucle de movimiento si estamos en game over o no hay pieza activa
-    if (gameOver || !activePosition) return;
+    // Pausar el bucle de movimiento si estamos en game over, no hay pieza activa o el juego está pausado
+    if (gameOver || !activePosition || isPaused) return;
 
     const interval = setInterval(() => {
       const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
@@ -275,21 +275,21 @@ export default function Board({ pokemonBox, onStateChange }) {
       }
     }, 600);
     return () => clearInterval(interval);
-  }, [canMove, activePosition, gameOver]);
+  }, [canMove, activePosition, gameOver, isPaused]);
 
   useEffect(() => {
     spawnPiece();
   }, []);
 
   useEffect(() => {
-    // Solo incrementar score mientras el juego no esté en gameOver
-    if (gameOver) return;
+    // Solo incrementar score mientras el juego no esté en gameOver ni pausado
+    if (gameOver || isPaused) return;
 
     const scoreInterval = setInterval(() => {
       setScore((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(scoreInterval);
-  }, [gameOver]);
+  }, [gameOver, isPaused]);
 
   const shapeColors = {
     I: "bg-teal-600 text-white",
