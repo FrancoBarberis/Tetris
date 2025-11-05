@@ -59,15 +59,17 @@ function App() {
 
   // Entrar automáticamente al juego cuando todo esté listo
   // Solo entrar cuando la barra esté llena Y el gif haya terminado 2 ciclos completos
+  // Consultar el Pokémon durante la carga
+  useEffect(() => {
+    if (!pokemonActual) {
+      getRandomPokemon().then(setPokemonActual);
+    }
+  }, [pokemonActual]);
+
   useEffect(() => {
     if (displayProgress === 100 && gifCyclesAfterFull >= 2 && loading) {
       setLoading(false);
       setShowTutorial(true);
-      async function fetchPokemon() {
-        const data = await getRandomPokemon();
-        setPokemonActual(data);
-      }
-      fetchPokemon();
     }
   }, [displayProgress, gifCyclesAfterFull, loading]);
 
