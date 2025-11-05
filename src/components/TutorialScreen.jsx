@@ -28,8 +28,8 @@ export default function TutorialScreen({ onContinue }) {
             <div className="flex-1">
               <ul className="text-base mb-5 list-disc list-inside text-left w-full text-gray-200">
                 <li>Forma <b>columnas</b> para ganar puntos.</li>
-                <li>Usa los puntos para comprar <b>pokeballs</b> en la tienda.</li>
-                <li>Lanza <b>pokeballs</b> para dañar al Pokémon rival.</li>
+                <li>Usa los puntos para comprar <b>pokeballs</b> de distintas rarezas en la tienda.</li>
+                <li>Lanza <b>pokeballs</b> para dañar al Pokémon rival (a mayor rareza, más daño hace).</li>
               </ul>
             </div>
           </div>

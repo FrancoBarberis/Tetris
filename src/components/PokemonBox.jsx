@@ -1,4 +1,6 @@
+
 import React, { useEffect, useRef } from "react";
+import { TYPE_COLORS, TYPE_NAMES_ES } from "../utils/typeColors";
 
 export default function PokemonBox({ pokemon }) {
   useEffect(() => {
@@ -39,6 +41,9 @@ export default function PokemonBox({ pokemon }) {
       + (pokemon.stats.find(stat => stat.stat.name === "special-defense")?.base_stat || 0)
     : 0;
 
+  // Tipos del Pokémon
+  const types = pokemon.types || [];
+
   return (
     <div className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-6 flex flex-col items-center w-fit">
       <audio
@@ -76,6 +81,18 @@ export default function PokemonBox({ pokemon }) {
         </div>
       </div>
       <p className="text-gray-300 capitalize mt-1 mb-0">{pokemon.name}</p>
+      {/* Tipos al final */}
+      <div className="flex gap-2 mt-3">
+        {types.map(t => (
+          <span
+            key={t.type.name}
+            className="px-3 py-1 rounded text-xs font-bold uppercase"
+            style={{ background: TYPE_COLORS[t.type.name] || '#888', color: '#fff', letterSpacing: '1px' }}
+          >
+            {TYPE_NAMES_ES[t.type.name] || t.type.name}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

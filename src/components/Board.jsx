@@ -28,8 +28,10 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
     // usando el ancho de la pieza para que ninguna celda nazca dentro
     const shapeWidth = nextPiece.matrix[0].length;
     const shapeHeight = nextPiece.matrix.length;
+    // Para la pieza I, hacer que entre más rápido al tablero
+    const offsetX = nextPiece.type === "I" ? -1 : -shapeWidth;
     const startPos = {
-      x: -shapeWidth,
+      x: offsetX,
       y: Math.max(Math.floor((rows - shapeHeight) / 2), 0),
     };
 
@@ -190,7 +192,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
           )
         );
       });
-      // Esperar la animación antes de eliminar
+      // Esperar la animación antes de eliminar (más rápido)
       setTimeout(() => {
         const clearedBoard = newBoard.map((row) => [...row]);
         // Eliminar todas las columnas a la vez
@@ -203,7 +205,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
         setBoard(clearedBoard);
         // después de solidificar, intentar spawnear la siguiente
         spawnPiece();
-      }, 500);
+      }, 200);
       return;
     }
 
