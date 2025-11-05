@@ -51,10 +51,10 @@ export default function TutorialScreen({ onContinue }) {
   {/* Semi-transparent overlay with blur and gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-gray-500/10 to-gray-600/10 backdrop-blur-md" />
   {/* Modal visually consistent with the main layout */}
-      <div className="relative w-full max-w-3xl mx-4 pointer-events-auto">
+      <div className="tutorial-modal relative w-full max-w-3xl mx-4 pointer-events-auto">
         <div className="bg-gradient-to-b from-black to-blue-900 rounded p-6 md:p-10 border-2 border-purple-700 flex flex-col items-stretch relative" style={{ minHeight: '450px', paddingBottom: '5%' }}>
           <h2 className="text-2xl font-extrabold mb-3 text-purple-300 uppercase drop-shadow text-center">{t.title}</h2>
-          <div className="flex flex-col md:flex-row gap-8 w-full flex-1 overflow-auto">
+          <div className="instructions flex flex-col md:flex-row w-full flex-1 overflow-auto md:mt-12 lg:mt-3">
             <div className="flex-1">
               <ul className="text-base mb-5 list-none text-left w-full text-gray-200 space-y-2">
                 {t.instructions.map((item, index) => (
