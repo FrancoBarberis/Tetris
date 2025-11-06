@@ -54,21 +54,21 @@ export default function TutorialScreen({ onContinue }) {
       <div className="tutorial-modal relative w-full max-w-3xl mx-4 pointer-events-auto">
         <div className="bg-gradient-to-b from-black to-blue-900 rounded p-6 md:p-10 border-2 border-purple-700 flex flex-col items-stretch relative" style={{ minHeight: '450px', paddingBottom: '5%' }}>
           <h2 className="text-2xl font-extrabold mb-3 text-purple-300 uppercase drop-shadow text-center">{t.title}</h2>
-          <div className="instructions flex flex-col md:flex-row w-full flex-1 overflow-auto md:mt-12 lg:mt-3">
+          <div className="instructions flex flex-col md:flex-row w-full flex-1 overflow-auto md:mt-12 lg:mt-3 md:gap-x-8">
             <div className="flex-1">
-              <ul className="text-base mb-5 list-none text-left w-full text-gray-200 space-y-2">
+                  <ul className="text-base mb-5 list-disc list-inside text-left w-full text-gray-200 md:pl-4 md:pr-2">
                 {t.instructions.map((item, index) => (
-                  <li key={index} className="flex items-start gap-2">
+                  <li key={index} className="flex items-start gap-2 mb-2">
                     <img src={pokeballIcon} alt="" className="w-4 h-4 mt-1 flex-shrink-0" />
                     <span dangerouslySetInnerHTML={{ __html: item.text }} />
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="flex-1">
-              <ul className="text-base mb-5 list-none text-left w-full text-gray-200 space-y-2">
+    <div className="flex-1">
+      <ul className="text-base mb-5 list-disc list-inside text-left w-full text-gray-200 md:pr-6 md:pl-2">
                 {t.goals.map((item, index) => (
-                  <li key={index} className="flex items-start gap-2">
+                  <li key={index} className="flex items-start gap-2 mb-2">
                     <img src={pokeballIcon} alt="" className="w-4 h-4 mt-1 flex-shrink-0" />
                     <span dangerouslySetInnerHTML={{ __html: item.text }} />
                   </li>

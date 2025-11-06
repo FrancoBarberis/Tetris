@@ -12,8 +12,8 @@ export default function LoadingScreen({ progress = 0 }) {
         <img
           src={poketrisLogo}
           alt="Poketris Logo"
-          className="w-full max-w-[520px] h-auto mb-2 mt-0 drop-shadow-xl"
-          style={{ imageRendering: "crisp-edges", marginTop: '0.5vh' }}
+          className="w-full max-w-[520px] h-auto mb-2 drop-shadow-xl mt-2 md:mt-8 lg:mt-12 xl:mt-16"
+          style={{ imageRendering: "crisp-edges" }}
         />
         <img
           src={gengarGif}
