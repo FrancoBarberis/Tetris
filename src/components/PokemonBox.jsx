@@ -4,21 +4,20 @@ import { usePokeballs } from "../contexts/PokeballContext";
 function PokeballButton({ type, label, color, disabled, onClick }) {
   return (
     <button
-      className={`flex flex-col items-center rounded focus:outline-none transition-transform ${
+      className={`flex flex-col relative items-center rounded focus:outline-none transition-transform w-fit ${
         disabled ? "opacity-50 cursor-not-allowed grayscale" : "hover:scale-105 cursor-pointer"
       } `}
-      style={{ width: "44px" }}
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
     >
       <div
-        className={`flex flex-col items-center justify-center w-fit h-fit rounded-full shadow pt-1 px-1 gap-2`}
+        className={`flex flex-col items-center justify-center min-w-fit h-fit rounded-full shadow pt-1 px-1 gap-2 w-10 hover:brightness-110 transition-all ease-in-out`}
         style={{ background: disabled ? "#888" : color }}
       >
-        <img src={pokeballIcon} alt={label} className="w-5 h-5" />
+        <img src={pokeballIcon} alt={label} className="w-12 h-auto " />
         
       <span
-        className="text-[0.60rem] font-bold text-white drop-shadow text-center pb-1"
+        className="text-sm font-bold text-white drop-shadow text-center pb-1"
         style={{ lineHeight: "1.1" }}
       >
         {label}
