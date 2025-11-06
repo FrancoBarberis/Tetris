@@ -110,13 +110,13 @@ function App() {
         score={boardState.score}
         shapeColors={boardState.shapeColors}
       />
-      <div className="application-container flex flex-row w-full flex-grow min-h-0 justify-center items-center">
+      <div className="application-container flex flex-row w-full flex-grow min-h-0 justify-between items-center">
         <PokeballSidebar />
-          <Board
-            pokemonBox={<PokemonBox pokemon={pokemonActual} />}
-            onStateChange={setBoardState}
-            isPaused={showTutorial}
-          />
+        <Board
+          onStateChange={setBoardState}
+          isPaused={showTutorial}
+        />
+        <PokemonBox pokemon={pokemonActual} />
       </div>
       {showTutorial && (
         <TutorialScreen onContinue={() => setShowTutorial(false)} />

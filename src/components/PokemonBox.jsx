@@ -1,9 +1,28 @@
+import pokeballIcon from "../assets/pokeball.png";
+import { usePokeballs } from "../contexts/PokeballContext";
+
+function PokeballButton({ type, label, color, disabled, onClick }) {
+  return (
+    <button
+      className={`flex flex-col items-center px-1 py-1 rounded focus:outline-none transition-transform ${disabled ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:scale-105'} `}
+      style={{ width: '44px' }}
+      disabled={disabled}
+      onClick={disabled ? undefined : onClick}
+    >
+      <span className={`flex items-center justify-center w-7 h-7 rounded-full shadow`} style={{ background: disabled ? '#888' : color }}>
+        <img src={pokeballIcon} alt={label} className="w-5 h-5" />
+      </span>
+      <span className="text-[0.60rem] font-bold text-white mt-1 drop-shadow text-center" style={{ lineHeight: '1.1' }}>{label}</span>
+    </button>
+  );
+}
 
 import React, { useEffect, useRef } from "react";
 import { TYPE_COLORS, TYPE_NAMES_ES, TYPE_NAMES_EN } from "../utils/typeColors";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export default function PokemonBox({ pokemon }) {
+  const { balls, useBall } = usePokeballs();
   const { language } = useLanguage();
   const TYPE_NAMES = language === 'es' ? TYPE_NAMES_ES : TYPE_NAMES_EN;
   
@@ -49,8 +68,19 @@ export default function PokemonBox({ pokemon }) {
   const types = pokemon.types || [];
 
   return (
-    <div className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-6 flex flex-col items-center w-fit" style={{ opacity: 0.7 }}>
-  <div style={{ opacity: 1, width: '100%' }} className="flex flex-col items-center brightness-100">
+    <div className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-6 flex flex-col items-center w-fit mr-8 xl:mr-16" style={{ opacity: 0.7 }}>
+      {/* Botón de huir */}
+         <div className="w-full flex justify-center mb-2">
+           <button className="bg-gradient-to-r from-red-700 to-black text-white font-bold px-4 py-1 rounded shadow hover:scale-105 transition-transform text-xs uppercase">{language === 'es' ? 'Huir' : 'Flee'}</button>
+         </div>
+      {/* Botones de pokeballs */}
+      <div className="w-full flex flex-row justify-center gap-2 mb-3">
+        <PokeballButton type="normal" label={language === 'es' ? 'Pokeball' : 'Pokeball'} color="#E53E3E" disabled={balls[0] === 0} onClick={() => useBall(0)} />
+        <PokeballButton type="super" label={language === 'es' ? 'Superball' : 'Great Ball'} color="#3182CE" disabled={balls[1] === 0} onClick={() => useBall(1)} />
+        <PokeballButton type="ultra" label={language === 'es' ? 'Ultraball' : 'Ultra Ball'} color="#ECC94B" disabled={balls[2] === 0} onClick={() => useBall(2)} />
+        <PokeballButton type="master" label={language === 'es' ? 'Masterball' : 'Master Ball'} color="#9F7AEA" disabled={balls[3] === 0} onClick={() => useBall(3)} />
+      </div>
+      <div style={{ opacity: 1, width: '100%' }} className="flex flex-col items-center brightness-100">
         <audio
           ref={audioRef}
           src={`https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`}
@@ -58,11 +88,11 @@ export default function PokemonBox({ pokemon }) {
         />
   <p className="text-yellow-600 font-bold text-2xl mb-2 drop-shadow cursor-default">N° {pokemon.id}</p>
         {pokemon.sprites.front_default ? (
-          <div className="flex items-center justify-center w-40 h-40 bg-yellow-200 rounded border-4 border-yellow-400 mb-3 shadow-md">
+          <div className="flex items-center justify-center w-40 h-40 xl:w-56 xl:h-56 bg-yellow-200 rounded border-4 border-yellow-400 mb-3 shadow-md">
             <img
               src={pokemon.sprites.front_default}
               alt={pokemon.name}
-              className="w-36 h-36 drop-shadow"
+              className="w-36 h-36 xl:w-52 xl:h-52 drop-shadow"
               style={{ imageRendering: "pixelated" }}
               onError={e => {
                 e.target.style.display = 'none';
@@ -71,7 +101,7 @@ export default function PokemonBox({ pokemon }) {
             />
           </div>
         ) : (
-          <div className="w-40 h-40 flex items-center justify-center bg-gray-700 text-white mb-2 rounded border-2 border-gray-300">
+          <div className="w-40 h-40 xl:w-56 xl:h-56 flex items-center justify-center bg-gray-700 text-white mb-2 rounded border-2 border-gray-300">
             <span>Sin sprite</span>
           </div>
         )}
