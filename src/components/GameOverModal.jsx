@@ -16,7 +16,7 @@ export default function GameOverModal({ score, onRestart, title = 'Game Over' })
 
       {/* Modal visualmente consistente con el layout principal */}
       <div className="game-over-modal relative max-w-sm w-full mx-4 pointer-events-auto">
-          <div className="bg-gradient-to-b from-black to-blue-900 rounded p-3 text-center">
+          <div className="bg-gradient-to-b from-black to-blue-900 rounded p-3 text-center border-1 border-blue-600">
             <h2 className="text-2xl font-extrabold mb-4 text-gray-300 uppercase drop-shadow">{title}</h2>
             <p className="mb-6 text-md text-gray-300 uppercase">Your score<br /><span className="font-bold text-2xl text-gray-300 drop-shadow">{score}</span></p>
             <div className="flex justify-center">

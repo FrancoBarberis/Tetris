@@ -98,8 +98,8 @@
 }
 /* Pokeball styles refinados */
 .pokeball {
-  width: 96px;
-  height: 96px;
+  width: 10vh;
+  height: 10vh;
   border-radius: 50%;
   position: relative;
   box-shadow: 0 2px 12px #222;
@@ -124,8 +124,8 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 40%;
-  height: 40%;
+  width: 30%;
+  height: 30%;
   background: var(--pokeball-button-border, #CCC);
   border-radius: 50%;
   border: 2px solid var(--pokeball-band, #000);

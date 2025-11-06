@@ -365,7 +365,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
                   //CELDAS
                   <div
                     key={`${rowIndex}-${colIndex}`}
-                    className={`cell border border-black opacity-100 contrast-200 w-[4.5vh] h-[4.5vh] ${
+                    className={`cell border border-black opacity-100 contrast-200 w-[5vh] h-[5vh] max-w-8 max-h-8 ${
                       cellType ? shapeColors[cellType] : "bg-transparent"
                     }${isFading ? " fade-out-col" : ""}`}
                   />

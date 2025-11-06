@@ -68,7 +68,7 @@ export default function PokemonBox({ pokemon }) {
   const types = pokemon.types || [];
 
   return (
-    <div className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-6 flex flex-col items-center w-fit mr-8 xl:mr-16" style={{ opacity: 0.7 }}>
+    <div className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-3 flex flex-col items-center w-fit mr-2 xl:mr-5" style={{ opacity: 0.7 }}>
       {/* Botón de huir */}
          <div className="w-full flex justify-center mb-2">
            <button className="bg-gradient-to-r from-red-700 to-black text-white font-bold px-4 py-1 rounded shadow hover:scale-105 transition-transform text-xs uppercase">{language === 'es' ? 'Huir' : 'Flee'}</button>
