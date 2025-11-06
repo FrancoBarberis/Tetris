@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import PokemonBox from "./components/PokemonBox";
 import PokeballSidebar from "./components/PokeballSidebar";
 import getRandomPokemon from "./utils/pokemons";
+import pokemonShop from "./assets/PokemonShop3rdGen.png";
 
 function App() {
   const [pokemonActual, setPokemonActual] = useState(null);
@@ -99,7 +100,7 @@ function App() {
             opacity: 0.3,
             filter: 'drop-shadow(0 0 32px #000)',
             objectFit: 'contain',
-            right: '-18vw',
+            right: '-10vw',
             top: '50%',
             transform: 'translateY(-50%)',
           }}
