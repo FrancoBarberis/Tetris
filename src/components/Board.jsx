@@ -15,14 +15,26 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   const previewCell = 24;
   const previewBox = 72;
 
+  // --- Estado inicial forzado para depuración ---
+  // 4 columnas llenas menos una celda por columna (fila 6 vacía)
+  const debugCols = [cols - 4, cols - 3, cols - 2, cols - 1];
+  const debugBoard = Array.from({ length: rows }, (_, rIdx) =>
+    Array.from({ length: cols }, (__, cIdx) =>
+      debugCols.includes(cIdx)
+        ? (rIdx === 6 ? null : "I")
+        : null
+    )
+  );
+
   const [activePiece, setActivePiece] = useState(null);
   const [activePosition, setActivePosition] = useState(null);
-  const [nextPiece, setNextPiece] = useState(getRandomShape());
+  // Primera pieza forzada como I
+  const [nextPiece, setNextPiece] = useState({ type: "I", matrix: [[1, 1, 1, 1]] });
   const [score, setScore] = useState(0);
-  const [board, setBoard] = useState(
-    Array.from({ length: rows }, () => Array(cols).fill(null))
-  );
+  const [board, setBoard] = useState(debugBoard);
   const [gameOver, setGameOver] = useState(false);
+  // Estado para columnas en fade-out
+  const [colsFading, setColsFading] = useState([]);
 
   function spawnPiece() {
     // Posición de inicio: completamente a la izquierda (fuera del tablero)
@@ -183,27 +195,47 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
 
     if (colsToClear.length > 0) {
       setScore((prev) => prev + colsToClear.length * 100);
+      setColsFading(colsToClear); // Guardar columnas en fade-out
       // Marcar las celdas a eliminar con fade-out antes de borrarlas
-      setBoard((prev) => {
-        return prev.map((row, rowIdx) =>
-          row.map((cell, colIdx) =>
-            colsToClear.includes(colIdx) && cell
-              ? { type: cell, fading: true }
-              : cell
-          )
+      // Solidificar la pieza y aplicar fade-out a las columnas a borrar
+      setBoard(prev => {
+        // Primero solidificamos la pieza activa en el tablero
+        let boardWithPiece = prev.map(row => [...row]);
+        activePiece.matrix.forEach((row, r) => {
+          row.forEach((cell, c) => {
+            if (!cell) return;
+            const y = activePosition.y + r;
+            const x = activePosition.x + c;
+            if (y >= 0 && y < rows && x >= 0 && x < cols) {
+              boardWithPiece[y][x] = activePiece.type;
+            }
+          });
+        });
+        // Ahora aplicamos fade-out a las columnas a borrar
+        return boardWithPiece.map((row, rowIdx) =>
+          row.map((cell, colIdx) => {
+            if (colsToClear.includes(colIdx) && cell) {
+              return { type: typeof cell === 'object' ? cell.type : cell, fading: true };
+            }
+            return cell;
+          })
         );
       });
       // Esperar la animación antes de eliminar (más rápido)
       setTimeout(() => {
-        const clearedBoard = newBoard.map((row) => [...row]);
-        // Eliminar todas las columnas a la vez
-        for (const col of colsToClear) {
-          for (let row = 0; row < rows; row++) {
-            clearedBoard[row].splice(col, 1);
-            clearedBoard[row].unshift(null);
-          }
-        }
-        setBoard(clearedBoard);
+        setBoard(prev => {
+          let clearedBoard = prev.map(row => [...row]);
+          // Eliminar todas las columnas a la vez, reconstruyendo cada fila
+          clearedBoard = clearedBoard.map(row => {
+            const newRow = row.filter((_, idx) => !colsToClear.includes(idx));
+            while (newRow.length < cols) {
+              newRow.unshift(null);
+            }
+            return newRow;
+          });
+          return clearedBoard;
+        });
+        setColsFading([]); // Limpiar columnas en fade-out
         // después de solidificar, intentar spawnear la siguiente
         spawnPiece();
       }, 200);
@@ -343,7 +375,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
             {board.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 let value = cell;
-
+                // Renderizar la pieza activa normalmente, pero si hay columnas en fade-out, no mostrar el bloque activo en esas columnas
                 if (activePiece && activePosition) {
                   for (let r = 0; r < activePiece.matrix.length; r++) {
                     for (let c = 0; c < activePiece.matrix[r].length; c++) {
@@ -351,7 +383,10 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
                         const y = activePosition.y + r;
                         const x = activePosition.x + c;
                         if (y === rowIndex && x === colIndex) {
-                          value = activePiece.type;
+                          // Si la columna está en fade-out, no mostrar el bloque activo
+                          if (!colsFading.includes(colIndex)) {
+                            value = activePiece.type;
+                          }
                         }
                       }
                     }
