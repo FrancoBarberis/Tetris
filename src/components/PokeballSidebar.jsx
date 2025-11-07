@@ -37,7 +37,6 @@ function PokeballHTML({ className, idx }) {
 export default function PokeballSidebar() {
   return (
     <div className="pokeball-sidebar flex flex-col gap-1.5 items-end h-fit w-fit justify-start mt-2">
-      <img src={PokemonShop} alt="PokemonShop" className="absolute z-0 top-30 left-10 h-[20vh] w-auto"/>
       {pokeballs.map((ball, idx) => (
         <div className="bg-gradient-to-l from-black via-red-900 to-blue-950 py-2 pl-6 pr-20 z-10 opacity-70" key={idx}>
           <PokeballHTML className={ball.className} idx={idx} />

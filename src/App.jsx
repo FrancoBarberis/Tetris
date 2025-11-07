@@ -12,6 +12,13 @@ import pokemonShop from "./assets/PokemonShop3rdGen.png";
 
 function App() {
   const [pokemonActual, setPokemonActual] = useState(null);
+    const [backgroundSprite, setBackgroundSprite] = useState(null);
+    const handleChangePokemon = (poke) => {
+      setPokemonActual(poke);
+    };
+    useEffect(() => {
+      setBackgroundSprite(pokemonActual?.sprites?.front_default || null);
+    }, [pokemonActual]);
   const [showTutorial, setShowTutorial] = useState(false);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -64,7 +71,10 @@ function App() {
   // Consultar el Pokémon durante la carga
   useEffect(() => {
     if (!pokemonActual) {
-      getRandomPokemon().then(setPokemonActual);
+      getRandomPokemon().then((poke) => {
+        setPokemonActual(poke);
+        setBackgroundSprite(poke?.sprites?.front_default || null);
+      });
     }
   }, [pokemonActual]);
 
@@ -91,9 +101,9 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen w-full relative bg-black overflow-hidden">
       {/* Giant and faded sprite on the right */}
-      {pokemonActual?.sprites?.front_default && (
+        {backgroundSprite && (
         <img
-          src={pokemonActual.sprites.front_default}
+            src={backgroundSprite}
           alt={pokemonActual.name}
           className="pointer-events-none select-none fixed z-0"
           style={{
@@ -108,13 +118,28 @@ function App() {
           }}
         />
       )}
+      {/* Fondo de la tienda PokemonShop en la esquina inferior izquierda */}
+      <img
+        src={pokemonShop}
+        alt="PokemonShop"
+        className="pointer-events-none select-none fixed z-0"
+        style={{
+          height: 'min(8vw, 14vh)',
+          width: 'auto',
+          opacity: 0.22,
+          left: '4vw',
+          bottom: '70vh', // ligeramente más abajo
+          right: 'auto',
+          objectFit: 'contain',
+        }}
+      />
       <Header
         nextPiece={boardState.nextPiece}
         score={boardState.score}
         shapeColors={boardState.shapeColors}
       />
       <div className="application-container flex flex-row w-full flex-grow min-h-0 justify-between items-center">
-        <div className="relative">
+        <div className="relative flex flex-col items-end">
           <PokeballSidebar />
           {/* Switch de idioma abajo a la izquierda, compacto */}
           <div className="fixed bottom-3 left-3 z-50 flex gap-1 items-center">
@@ -139,7 +164,7 @@ function App() {
           onStateChange={setBoardState}
           isPaused={showTutorial}
         />
-        <PokemonBox pokemon={pokemonActual} />
+  <PokemonBox pokemon={pokemonActual} onChangePokemon={handleChangePokemon} />
       </div>
       {showTutorial && (
         <TutorialScreen onContinue={() => setShowTutorial(false)} />

@@ -31,10 +31,16 @@ import React, { useEffect, useRef } from "react";
 import { TYPE_COLORS, TYPE_NAMES_ES, TYPE_NAMES_EN } from "../utils/typeColors";
 import { useLanguage } from "../contexts/LanguageContext";
 
-export default function PokemonBox({ pokemon }) {
+export default function PokemonBox({ pokemon, onChangePokemon }) {
   const { balls, useBall } = usePokeballs();
   const { language } = useLanguage();
   const TYPE_NAMES = language === "es" ? TYPE_NAMES_ES : TYPE_NAMES_EN;
+  const handleFlee = async () => {
+    const { default: getRandomPokemon } = await import("../utils/pokemons");
+    getRandomPokemon().then((poke) => {
+      if (typeof onChangePokemon === 'function') onChangePokemon(poke);
+    });
+  };
 
   useEffect(() => {
     if (pokemon) {
@@ -92,12 +98,15 @@ export default function PokemonBox({ pokemon }) {
 
   return (
     <div
-      className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-3 flex flex-col items-center w-fit mr-2 xl:mr-5 max-h-fit"
+      className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-3 flex flex-col items-center w-fit min-w-[180px] xl:min-w-[220px] mr-2 xl:mr-5 max-h-fit"
       style={{ opacity: 0.7 }}
     >
       {/* Botón de huir */}
       <div className="w-full flex justify-center mb-2">
-        <button className="bg-gradient-to-r from-red-700 to-black text-white font-bold px-4 py-1 rounded shadow hover:scale-105 hover:brightness-150 transition-transform text-xs uppercase cursor-pointer mb-3">
+        <button
+          className="bg-gradient-to-r from-red-700 to-black text-white font-bold px-2 py-1 rounded shadow hover:scale-105 hover:brightness-150 transition-transform text-xs uppercase cursor-pointer mb-3 min-w-[54px] xl:min-w-[60px] max-w-[80px] text-center whitespace-nowrap"
+          onClick={handleFlee}
+        >
           {language === "es" ? "Huir" : "Flee"}
         </button>
       </div>
@@ -141,7 +150,7 @@ export default function PokemonBox({ pokemon }) {
           src={`https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`}
           preload="auto"
         />
-        <p className="text-yellow-600 font-bold text-2xl mb-2 drop-shadow cursor-default">
+        <p className="text-yellow-600 font-bold text-2xl mb-2 drop-shadow cursor-default text-center w-full">
           N° {pokemon.id}
         </p>
         {pokemon.sprites.front_default ? (
@@ -166,29 +175,32 @@ export default function PokemonBox({ pokemon }) {
         {/* Barra de vida */}
         <div className="w-full ">
           <div className="text-md text-green-200 font-bold mb-1 text-center drop-shadow cursor-default">
-            HP: {hpStat}
+            HP: {pokemon.stats
+              ? pokemon.stats.find((stat) => stat.stat.name === "hp")?.base_stat || 0
+              : 0}
           </div>
           <div className="w-full h-6 bg-gray-700 rounded-xs overflow-hidden border-black border-2">
             <div
               className="h-full bg-green-300 transition-all duration-500 shadow"
-              style={{ width: `${percent}%` }}
+              style={{ width: `100%` }}
             />
           </div>
         </div>
-        <p className="text-yellow-700 capitalize mt-1 mb-0 font-bold drop-shadow cursor-default">
+        <p className="text-yellow-700 capitalize mt-1 mb-0 font-bold drop-shadow cursor-default text-center w-full">
           {pokemon.name}
         </p>
         {/* Tipos al final */}
-        <div className="flex gap-2 mt-3">
-          {types.map((t) => (
+        <div className="flex gap-2 mt-3 justify-center w-full flex-wrap">
+          {(pokemon.types || []).map((t) => (
             <span
               key={t.type.name}
-              className="px-3 py-1 rounded text-xs font-bold uppercase shadow cursor-default"
+              className="px-2 py-1 rounded text-xs font-bold uppercase shadow cursor-default w-[100px] truncate text-center overflow-hidden"
               style={{
                 background: TYPE_COLORS[t.type.name] || "#fff",
                 color: "#222",
                 letterSpacing: "1px",
                 filter: "brightness(1.1)",
+                display: 'inline-block',
               }}
             >
               {TYPE_NAMES[t.type.name] || t.type.name}
