@@ -152,7 +152,7 @@ function App() {
         shapeColors={boardState.shapeColors}
       />
       <div className="application-container flex flex-row w-full flex-grow min-h-0 items-center justify-between relative">
-        <div className="relative flex flex-col items-end">
+  <div className="relative flex flex-col items-end">
           <PokeballSidebar />
           {/* Switch de idioma abajo a la izquierda, compacto */}
           <div className="fixed bottom-3 left-3 z-50 flex gap-1 items-center">
@@ -173,7 +173,7 @@ function App() {
             </button>
           </div>
         </div>
-        <div className="flex-grow flex items-center justify-center">
+        <div className="flex-grow flex items-center justify-center gap-x-8 xl:gap-x-16">
           <Board
             key={boardKey}
             onStateChange={setBoardState}

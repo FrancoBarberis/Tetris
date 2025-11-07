@@ -28,7 +28,7 @@ export default function PokeballSidebar() {
 
   const { addBall } = usePokeballs();
   return (
-    <div className="pokeball-sidebar flex flex-col gap-1.5 items-end h-fit w-full justify-start mt-2">
+  <div className="pokeball-sidebar flex flex-col gap-1.5 items-end h-fit w-full justify-start mt-2">
       {pokeballs.map((ball, idx) => (
         <div
           className="bg-gradient-to-l from-black via-red-900 to-blue-950 z-10 flex items-center transition-all duration-200 hover:brightness-125 cursor-pointer w-full h-auto justify-end relative box-border overflow-hidden min-w-[12vw] max-w-[20vw] p-0 m-0"

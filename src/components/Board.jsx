@@ -335,13 +335,13 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
       <div className="game-container flex flex-row items-center justify-around w-fit max-w-7xl mx-auto gap-3">
         <div className="flex-1 flex items-center justify-center">
           <div
-            className="relative board grid overflow-hidden"
-            style={{
-              gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-              gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-              aspectRatio: `${cols} / ${rows}`,
-              backgroundColor: "red",
-            }}
+              className="relative board grid overflow-hidden max-w-[94vw] max-h-[94vh] mr-8 lg:mr-16 lg:ml-16"
+              style={{
+                gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+                gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+                aspectRatio: `${cols} / ${rows}`,
+                backgroundColor: "red",
+              }}
           >
             {/* Video de fondo */}
             <video
@@ -388,7 +388,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
                   //CELDAS
                   <div
                     key={`${rowIndex}-${colIndex}`}
-                    className={`cell border border-black opacity-100 contrast-200 w-[5vh] h-[5vh] max-w-8 max-h-8 ${
+                    className={`cell border border-black opacity-100 contrast-200 w-[4.5svh] h-[4.5vh] max-w-8 max-h-8 ${
                       cellType ? shapeColors[cellType] : "bg-transparent"
                     }${isFading ? " fade-out-col" : ""}`}
                   />
