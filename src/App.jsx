@@ -130,14 +130,13 @@ function App() {
       <img
         src={pokemonShop}
         alt="PokemonShop"
-        className="pointer-events-none select-none fixed z-0"
+        className="pointer-events-none select-none absolute z-0"
         style={{
-          height: 'min(8vw, 14vh)',
+          height: 'min(14vw, 22vh)',
           width: 'auto',
           opacity: 0.22,
-          left: '4vw',
-          bottom: '70vh', // ligeramente más abajo
-          right: 'auto',
+          left: '2vw',
+          top: 'calc(15vh + 32px)', // alineada con las pokeballs del sidebar
           objectFit: 'contain',
         }}
       />

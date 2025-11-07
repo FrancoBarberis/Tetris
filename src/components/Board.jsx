@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getRandomShape, resetBag } from "../utils/shapes";
 import GameOverModal from "./GameOverModal";
 import BoardBackground from "../assets/Eevee 4k.jpg";
@@ -304,7 +304,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
     const interval = setInterval(() => {
       const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
       if (canMove(nextPosition)) {
-        setActivePosition(nextPosition);
+        setActivePosition((pos) => ({ x: pos.x + 1, y: pos.y }));
       } else {
         solidifyPiece();
       }
