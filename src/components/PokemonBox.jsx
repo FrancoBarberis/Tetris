@@ -11,15 +11,16 @@ function PokeballButton({ type, label, color, disabled, onClick, style }) {
     master: { top: "#A040A0", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
   };
   const svg = ballSVG[type] || ballSVG.normal;
+  // Tamaño forzado para Pokémon Box (mini pokeballs)
   return (
     <button
       className={`flex flex-col relative items-center rounded focus:outline-none transition-transform w-fit ${disabled ? "opacity-50 cursor-not-allowed grayscale" : "hover:scale-105 cursor-pointer"}`}
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
-      style={{ padding: 0, margin: 0, minWidth: 0, ...style }}
+      style={{ padding: 0, margin: 0, minWidth: 0, width: '28px', height: '28px', ...style }}
     >
-      <div className="flex flex-col items-center justify-center w-10 h-10 rounded-lg shadow-md" style={{ minWidth: '32px', maxWidth: '32px', alignItems: 'center', background: 'rgba(30,30,40,0.85)', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', padding: '0' }}>
-        <svg width="24" height="24" viewBox="0 0 40 40" style={{ display: 'block', margin: '0', padding: 0 }}>
+      <div className="flex flex-col items-center justify-center rounded-full shadow-md" style={{ width: '24px', height: '24px', minWidth: '24px', maxWidth: '24px', background: 'rgba(30,30,40,0.85)', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', padding: '0' }}>
+        <svg width="18" height="18" viewBox="0 0 40 40" style={{ display: 'block', margin: '0', padding: 0 }}>
           <defs>
             <linearGradient id={`top-${type}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={svg.top} />
@@ -39,14 +40,14 @@ function PokeballButton({ type, label, color, disabled, onClick, style }) {
           {/* Button */}
           <circle cx="20" cy="20" r="6" fill={svg.button} stroke={svg.buttonBorder} strokeWidth="2" />
         </svg>
-          <div className="flex flex-col items-center w-full">
-            <span
-              className="text-[9px] font-bold text-white drop-shadow text-center pb-0"
-              style={{ lineHeight: "1.1", marginTop: '1px', textAlign: 'center', padding: 0, margin: 0 }}
-            >
-              {label}
-            </span>
-          </div>
+        <div className="flex flex-col items-center w-full">
+          <span
+            className="text-[7px] font-bold text-white drop-shadow text-center pb-0"
+            style={{ lineHeight: "1.1", marginTop: '1px', textAlign: 'center', padding: 0, margin: 0 }}
+          >
+            {label}
+          </span>
+        </div>
       </div>
     </button>
   );
@@ -57,6 +58,42 @@ import { TYPE_COLORS, TYPE_NAMES_ES, TYPE_NAMES_EN } from "../utils/typeColors";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export default function PokemonBox({ pokemon, onChangePokemon }) {
+  // Determinar género random según la pokeapi species
+  const [genderSymbol, setGenderSymbol] = React.useState({ symbol: null, color: null });
+  // Efecto para obtener el género desde la species y asignar el símbolo
+  useEffect(() => {
+    if (!pokemon) return;
+    setGenderSymbol({ symbol: null, color: null }); // Reset al cambiar de Pokémon
+    fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}`)
+      .then(res => res.json())
+      .then(species => {
+        const rate = species.gender_rate;
+        // gender_rate: -1 = sin género, 0 = solo macho, 8 = solo hembra, 1-7 = mixto
+        let symbol = null;
+        let color = null;
+        if (rate === -1) {
+          symbol = null;
+        } else if (rate === 0) {
+          symbol = '♂';
+          color = '#3498db';
+        } else if (rate === 8) {
+          symbol = '♀';
+          color = '#e74c3c';
+        } else {
+          // Mixto: probabilidad según rate
+          const femaleProb = rate / 8;
+          if (Math.random() < femaleProb) {
+            symbol = '♀';
+            color = '#e74c3c';
+          } else {
+            symbol = '♂';
+            color = '#3498db';
+          }
+        }
+        setGenderSymbol({ symbol, color });
+      })
+      .catch(() => setGenderSymbol({ symbol: null, color: null }));
+  }, [pokemon]);
   const [shakeOnEnter, setShakeOnEnter] = React.useState(false);
   const [entering, setEntering] = React.useState(false);
   const [hideSprite, setHideSprite] = React.useState(false);
@@ -194,6 +231,10 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
 
   // Elimina duplicados: hpStat y resettingHP ya están declarados arriba
   const percent = currentHP !== null ? Math.max(0, Math.round((currentHP / hpStat) * 100)) : 100;
+  // Color dinámico para la barra de vida
+  let hpColor = "bg-green-400";
+  if (percent <= 50 && percent > 20) hpColor = "bg-yellow-300";
+  if (percent <= 20) hpColor = "bg-red-500";
 
   // Defense factor: suma de defensa y defensa especial
   const defenseFactor = pokemon.stats
@@ -382,32 +423,41 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
             <span>Sin sprite</span>
           </div>
         )}
-        {/* Barra de vida */}
-        <div className="w-full ">
-          <div className="text-md text-green-200 font-bold mb-1 text-center drop-shadow cursor-default">
-            <span style={{
-              minWidth: '72px',
-              display: 'inline-block',
-              fontVariantNumeric: 'tabular-nums',
-              fontFamily: 'monospace',
-              textAlign: 'center',
-            }}>
-              HP: {currentHP !== null ? currentHP : hpStat} / {hpStat}
-            </span>
+        {/* Barra de vida estilo Pokémon */}
+        <div className="w-full flex flex-col items-start mt-2 relative">
+          {/* Fila superior: símbolo de género alineado a la derecha sobre la barra de vida */}
+          <div className="flex flex-row items-center justify-between w-full mb-1 gap-x-4" style={{whiteSpace:'nowrap'}}>
+            <div className="text-xs font-bold text-white drop-shadow tracking-wide font-mono" style={{whiteSpace:'nowrap'}}>
+              HP: <span className="text-yellow-300">{currentHP !== null ? currentHP : hpStat}</span> / {hpStat}
+            </div>
+            <div className="flex items-center justify-end w-full" style={{whiteSpace:'nowrap'}}>
+              <span
+                className="inline-block w-[2em] text-right font-extrabold text-2xl select-none"
+                style={{ color: genderSymbol.symbol ? genderSymbol.color : 'transparent', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+              >
+                {genderSymbol.symbol ? genderSymbol.symbol : '♂'}
+              </span>
+            </div>
           </div>
-          <div className="w-full h-6 bg-gray-700 rounded-xs overflow-hidden border-black border-2">
+          <div className="relative w-full h-6 border-4 border-black rounded-none overflow-hidden bg-gray-800 shadow-inner">
+            {/* Borde interior blanco */}
+            <div className="absolute inset-0 border border-white rounded-none pointer-events-none" />
+            {/* Brillo superior */}
+            <div className="absolute left-0 top-0 w-full h-2 bg-white bg-opacity-20 rounded-none pointer-events-none" />
+            {/* Barra de vida */}
             <div
-              className={`h-full bg-green-300 shadow`}
-              style={{
-                width: `${percent}%`,
-                transition: resettingHP ? 'none' : 'width 0.5s',
-              }}
+              className={`absolute left-0 top-0 h-full ${hpColor} transition-all duration-500 shadow-lg`}
+              style={{ width: `${percent}%`, zIndex: 10, transition: resettingHP ? 'none' : 'width 0.5s' }}
             />
           </div>
         </div>
-        <p className="text-yellow-700 capitalize mt-1 mb-0 font-bold drop-shadow cursor-default text-center w-full">
-          {pokemon.name}
-        </p>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full mt-1 mb-0">
+          <span></span>
+          <span className="text-yellow-700 capitalize font-bold drop-shadow cursor-default text-center text-lg" style={{minWidth: '140px', maxWidth: '180px', display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
+            {pokemon.name}
+          </span>
+          <span></span>
+        </div>
         {/* Tipos al final */}
         <div className="flex gap-2 mt-3 justify-center w-full flex-nowrap">
           {(pokemon.types || []).map((t) => (

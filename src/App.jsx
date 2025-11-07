@@ -95,6 +95,7 @@ function App() {
 
   // Board devolverá nextPiece, score y shapeColors como props
   const [boardState, setBoardState] = useState({ nextPiece: null, score: 0, shapeColors: {} });
+  const [boardKey, setBoardKey] = useState(0);
 
   if (loading || displayProgress < 100 || gifCyclesAfterFull < 2) {
     return (
@@ -105,6 +106,11 @@ function App() {
   }
 
   const { language, setLanguage } = useLanguage();
+  // Función para reiniciar el Board desde App (pasar a GameOverModal)
+  const handleBoardRestart = () => {
+    setBoardKey(prev => prev + 1);
+  };
+
   return (
     <div className="flex flex-col min-h-screen w-full relative bg-black overflow-hidden">
       {/* Giant and faded sprite on the right */}
@@ -145,7 +151,7 @@ function App() {
         score={boardState.score}
         shapeColors={boardState.shapeColors}
       />
-      <div className="application-container flex flex-row w-full flex-grow min-h-0 justify-between items-center">
+      <div className="application-container flex flex-row w-full flex-grow min-h-0 items-center justify-between relative">
         <div className="relative flex flex-col items-end">
           <PokeballSidebar />
           {/* Switch de idioma abajo a la izquierda, compacto */}
@@ -167,11 +173,16 @@ function App() {
             </button>
           </div>
         </div>
-        <Board
-          onStateChange={setBoardState}
-          isPaused={showTutorial}
-        />
-  <PokemonBox pokemon={pokemonActual} onChangePokemon={handleChangePokemon} />
+        <div className="flex-grow flex items-center justify-center">
+          <Board
+            key={boardKey}
+            onStateChange={setBoardState}
+            isPaused={showTutorial}
+          />
+        </div>
+        <div className="flex items-center">
+          <PokemonBox pokemon={pokemonActual} onChangePokemon={handleChangePokemon} />
+        </div>
       </div>
       {showTutorial && (
         <TutorialScreen onContinue={() => setShowTutorial(false)} />
