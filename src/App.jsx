@@ -11,13 +11,17 @@ import getRandomPokemon from "./utils/pokemons";
 import pokemonShop from "./assets/PokemonShop3rdGen.png";
 
 function App() {
+  const [bgEntering, setBgEntering] = useState(false);
   const [pokemonActual, setPokemonActual] = useState(null);
     const [backgroundSprite, setBackgroundSprite] = useState(null);
     const handleChangePokemon = (poke) => {
       setPokemonActual(poke);
     };
     useEffect(() => {
-      setBackgroundSprite(pokemonActual?.sprites?.front_default || null);
+  setBackgroundSprite(pokemonActual?.sprites?.front_default || null);
+  setBgEntering(true);
+  const timeout = setTimeout(() => setBgEntering(false), 600);
+  return () => clearTimeout(timeout);
     }, [pokemonActual]);
   const [showTutorial, setShowTutorial] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -101,23 +105,24 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen w-full relative bg-black overflow-hidden">
       {/* Giant and faded sprite on the right */}
-        {backgroundSprite && (
-        <img
-            src={backgroundSprite}
-          alt={pokemonActual.name}
-          className="pointer-events-none select-none fixed z-0"
-          style={{
-            height: '200vh',
-            width: 'auto',
-            opacity: 0.3,
-            filter: 'drop-shadow(0 0 32px #000)',
-            objectFit: 'contain',
-            right: '-10vw',
-            top: '50%',
-            transform: 'translateY(-50%)',
-          }}
-        />
-      )}
+          {backgroundSprite && (
+            <img
+              src={backgroundSprite}
+              alt={pokemonActual?.name}
+              className="pointer-events-none select-none fixed z-0"
+              style={{
+                height: '200vh',
+                width: 'auto',
+                opacity: 0.3,
+                filter: 'drop-shadow(0 0 32px #000)',
+                objectFit: 'contain',
+                right: '-10vw',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                animation: bgEntering ? 'bg-fade-in-up 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards' : 'none',
+              }}
+            />
+          )}
       {/* Fondo de la tienda PokemonShop en la esquina inferior izquierda */}
       <img
         src={pokemonShop}

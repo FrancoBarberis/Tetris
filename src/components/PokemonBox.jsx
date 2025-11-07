@@ -57,11 +57,13 @@ import { TYPE_COLORS, TYPE_NAMES_ES, TYPE_NAMES_EN } from "../utils/typeColors";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export default function PokemonBox({ pokemon, onChangePokemon }) {
+  const [shakeOnEnter, setShakeOnEnter] = React.useState(false);
+  const [entering, setEntering] = React.useState(false);
   const [hideSprite, setHideSprite] = React.useState(false);
   const { balls, useBall } = usePokeballs();
   const [currentHP, setCurrentHP] = React.useState(null);
   const [defeated, setDefeated] = React.useState(false);
-  const [resettingHP, setResettingHP] = React.useState(false);
+  const [resettingHP, setResettingHP] = React.useState(true);
   const [damaged, setDamaged] = React.useState(false);
   const { language } = useLanguage();
   const TYPE_NAMES = language === "es" ? TYPE_NAMES_ES : TYPE_NAMES_EN;
@@ -71,14 +73,33 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
     ? pokemon.stats.find((stat) => stat.stat.name === "hp")?.base_stat || 100
     : 100;
 
-  // Controla si el HP se está reseteando por cambio de Pokémon
+  // Animación de entrada al cambiar de Pokémon
+  React.useEffect(() => {
+    setEntering(true);
+    const timeoutEnter = setTimeout(() => setEntering(false), 700); // fade in más suave
+    return () => clearTimeout(timeoutEnter);
+  }, [pokemon?.id]);
+
+  // Shake y cry tras entrada
+  React.useEffect(() => {
+    if (entering) {
+      const timeoutShake = setTimeout(() => setShakeOnEnter(true), 700);
+      const timeoutUnshake = setTimeout(() => setShakeOnEnter(false), 880);
+      return () => {
+        clearTimeout(timeoutShake);
+        clearTimeout(timeoutUnshake);
+      };
+    } else {
+      setShakeOnEnter(false);
+    }
+  }, [entering]);
+
+  // Reset de HP y barra instantánea al cambiar de Pokémon
   React.useEffect(() => {
     setResettingHP(true);
     setCurrentHP(hpStat);
-    // Espera un frame para quitar el flag y evitar animación
-    const timeout = setTimeout(() => setResettingHP(false), 10);
-    return () => clearTimeout(timeout);
-  }, [hpStat, pokemon]);
+    requestAnimationFrame(() => setResettingHP(false));
+  }, [hpStat, pokemon?.id]);
 
   // Animación de daño no letal
   React.useEffect(() => {
@@ -293,7 +314,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
               <img
                 src={pokemon.sprites.front_default}
                 alt={pokemon.name}
-                className={`w-36 h-36 xl:w-52 xl:h-52 drop-shadow${defeated && currentHP === 0 ? ' defeated-pokemon' : ''}${damaged && !defeated ? ' damaged-pokemon' : ''}`}
+                className={`w-36 h-36 xl:w-52 xl:h-52 drop-shadow${defeated && currentHP === 0 ? ' defeated-pokemon' : ''}${damaged && !defeated ? ' damaged-pokemon' : ''}${entering ? ' entering-pokemon' : ''}${shakeOnEnter ? ' shake-on-enter' : ''}`}
                 style={{ imageRendering: "pixelated", position: 'absolute', left: 0, top: 0, zIndex: 2, transition: defeated ? 'transform 0.7s cubic-bezier(.68,-0.55,.27,1.55), opacity 0.3s' : 'none', width: '100%', height: '100%' }}
                 onError={(e) => {
                   e.target.style.display = "none";
@@ -309,11 +330,17 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
             )}
             {/* Animación CSS */}
             <style>{`
+              .shake-on-enter {
+                animation: shake-damage 0.18s 1;
+              }
               .defeated-pokemon {
                 animation: shake-poke 0.14s 2, fall-poke 0.48s 0.32s forwards;
               }
               .damaged-pokemon {
                 animation: shake-damage 0.18s 1;
+              }
+              .entering-pokemon {
+                animation: enter-poke 0.7s cubic-bezier(.68,-0.55,.27,1.55);
               }
               @keyframes shake-poke {
                 0% { transform: translateX(0); }
@@ -331,6 +358,11 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
                 50% { transform: translateX(5px); }
                 75% { transform: translateX(-3px); }
                 100% { transform: translateX(0); }
+              }
+              @keyframes enter-poke {
+                0% { opacity: 0; transform: translateY(32px); }
+                60% { opacity: 1; transform: translateY(-6px); }
+                100% { opacity: 1; transform: translateY(0); }
               }
               @keyframes fall-poke {
                 0% { opacity: 1; transform: translateY(0); }
@@ -360,7 +392,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
           </div>
           <div className="w-full h-6 bg-gray-700 rounded-xs overflow-hidden border-black border-2">
             <div
-              className={`h-full bg-green-300 shadow${resettingHP ? '' : ' transition-all duration-500'}`}
+              className={`h-full bg-green-300 shadow`}
               style={{
                 width: `${percent}%`,
                 transition: resettingHP ? 'none' : 'width 0.5s',

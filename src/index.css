@@ -1,3 +1,11 @@
+@keyframes bg-fade-in-up {
+  0% {
+    opacity: 0.08;
+  }
+  100% {
+    opacity: 0.22;
+  }
+}
 @keyframes pokeball-count-push-new {
   0% {
     opacity: 0;
