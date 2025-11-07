@@ -57,6 +57,7 @@ import { TYPE_COLORS, TYPE_NAMES_ES, TYPE_NAMES_EN } from "../utils/typeColors";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export default function PokemonBox({ pokemon, onChangePokemon }) {
+  const [hideSprite, setHideSprite] = React.useState(false);
   const { balls, useBall } = usePokeballs();
   const [currentHP, setCurrentHP] = React.useState(null);
   const [defeated, setDefeated] = React.useState(false);
@@ -92,10 +93,16 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
   React.useEffect(() => {
     if (currentHP === 0) {
       // Espera el tiempo de la animación de la barra antes de hacer el shake
-      const timeout = setTimeout(() => setDefeated(true), 600);
-      return () => clearTimeout(timeout);
+      const timeoutShake = setTimeout(() => setDefeated(true), 600);
+      // Espera el tiempo total de la animación para ocultar el sprite
+      const timeoutHide = setTimeout(() => setHideSprite(true), 600 + 480); // 600ms barra + 480ms caída
+      return () => {
+        clearTimeout(timeoutShake);
+        clearTimeout(timeoutHide);
+      };
     } else {
       setDefeated(false);
+      setHideSprite(false);
     }
   }, [currentHP, pokemon]);
 
@@ -282,11 +289,11 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
             className="flex items-center justify-center bg-yellow-200 rounded border-4 border-red-900 mb-3 shadow-md overflow-hidden"
             style={{ position: 'relative', minHeight: '144px', width: '144px', height: '144px', maxWidth: '208px', maxHeight: '208px' }}
           >
-            {(currentHP !== 0 || !defeated) ? (
+            {(!hideSprite && pokemon.sprites.front_default) ? (
               <img
                 src={pokemon.sprites.front_default}
                 alt={pokemon.name}
-                className="w-36 h-36 xl:w-52 xl:h-52 drop-shadow"
+                className={`w-36 h-36 xl:w-52 xl:h-52 drop-shadow${defeated && currentHP === 0 ? ' defeated-pokemon' : ''}${damaged && !defeated ? ' damaged-pokemon' : ''}`}
                 style={{ imageRendering: "pixelated", position: 'absolute', left: 0, top: 0, zIndex: 2, transition: defeated ? 'transform 0.7s cubic-bezier(.68,-0.55,.27,1.55), opacity 0.3s' : 'none', width: '100%', height: '100%' }}
                 onError={(e) => {
                   e.target.style.display = "none";
