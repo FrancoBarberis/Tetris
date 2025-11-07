@@ -25,6 +25,7 @@ function PokeballHTML({ className, idx }) {
 }
 
 export default function PokeballSidebar() {
+
   const { addBall } = usePokeballs();
   return (
     <div className="pokeball-sidebar flex flex-col gap-1.5 items-end h-fit w-full justify-start mt-2">
