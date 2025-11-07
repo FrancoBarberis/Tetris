@@ -15,25 +15,12 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   const previewCell = 24;
   const previewBox = 72;
 
-  // --- Estado inicial forzado para depuración ---
-  // 4 columnas llenas menos una celda por columna (fila 6 vacía)
-  const debugCols = [cols - 4, cols - 3, cols - 2, cols - 1];
-  const debugBoard = Array.from({ length: rows }, (_, rIdx) =>
-    Array.from({ length: cols }, (__, cIdx) =>
-      debugCols.includes(cIdx)
-        ? (rIdx === 6 ? null : "I")
-        : null
-    )
-  );
-
   const [activePiece, setActivePiece] = useState(null);
   const [activePosition, setActivePosition] = useState(null);
-  // Primera pieza forzada como I
-  const [nextPiece, setNextPiece] = useState({ type: "I", matrix: [[1, 1, 1, 1]] });
+  const [nextPiece, setNextPiece] = useState(getRandomShape());
   const [score, setScore] = useState(0);
-  const [board, setBoard] = useState(debugBoard);
+  const [board, setBoard] = useState(Array.from({ length: rows }, () => Array(cols).fill(null)));
   const [gameOver, setGameOver] = useState(false);
-  // Estado para columnas en fade-out
   const [colsFading, setColsFading] = useState([]);
 
   function spawnPiece() {
