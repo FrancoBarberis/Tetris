@@ -15,13 +15,16 @@ function App() {
   const [pokemonActual, setPokemonActual] = useState(null);
     const [backgroundSprite, setBackgroundSprite] = useState(null);
     const handleChangePokemon = (poke) => {
+      setBackgroundSprite(null);
       setPokemonActual(poke);
     };
     useEffect(() => {
-  setBackgroundSprite(pokemonActual?.sprites?.front_default || null);
-  setBgEntering(true);
-  const timeout = setTimeout(() => setBgEntering(false), 600);
-  return () => clearTimeout(timeout);
+      if (pokemonActual?.sprites?.front_default) {
+        setBackgroundSprite(pokemonActual.sprites.front_default);
+        setBgEntering(true);
+        const timeout = setTimeout(() => setBgEntering(false), 600);
+        return () => clearTimeout(timeout);
+      }
     }, [pokemonActual]);
   const [showTutorial, setShowTutorial] = useState(false);
   const [loading, setLoading] = useState(true);

@@ -219,6 +219,11 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
     setCurrentHP((prev) => {
       const newHP = Math.max(0, prev - damage);
       if (newHP === 0) {
+        // Shake de daño normal al principio
+        setDamaged(true);
+        setTimeout(() => setDamaged(false), 180);
+        // Shake letal tras vaciar la barra
+        setTimeout(() => setDefeated(true), 600);
         // Esperar a que la animación de la barra y la animación de derrota terminen antes de cambiar el Pokémon
         setTimeout(() => {
           if (typeof onChangePokemon === 'function') {

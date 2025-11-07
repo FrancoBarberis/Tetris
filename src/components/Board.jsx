@@ -11,6 +11,7 @@ import Logo from "../assets/poketrisLOGO.png";
 export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   const rows = 12;
   const cols = 25;
+  const gravitySpeed = 400;
   const previewCell = 24;
   const previewBox = 72;
 
@@ -275,7 +276,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
       } else {
         solidifyPiece();
       }
-    }, 600);
+    }, gravitySpeed);
     return () => clearInterval(interval);
   }, [canMove, activePosition, gameOver, isPaused]);
 
