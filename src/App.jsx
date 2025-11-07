@@ -1,3 +1,4 @@
+import { useLanguage } from "./contexts/LanguageContext";
 import React, { useEffect, useState, useRef } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import TutorialScreen from "./components/TutorialScreen";
@@ -86,6 +87,7 @@ function App() {
     );
   }
 
+  const { language, setLanguage } = useLanguage();
   return (
     <div className="flex flex-col min-h-screen w-full relative bg-black overflow-hidden">
       {/* Giant and faded sprite on the right */}
@@ -112,7 +114,27 @@ function App() {
         shapeColors={boardState.shapeColors}
       />
       <div className="application-container flex flex-row w-full flex-grow min-h-0 justify-between items-center">
-        <PokeballSidebar />
+        <div className="relative">
+          <PokeballSidebar />
+          {/* Switch de idioma abajo a la izquierda, compacto */}
+          <div className="fixed bottom-3 left-3 z-50 flex gap-1 items-center">
+            <button
+              onClick={() => setLanguage("en")}
+              className={`px-3 py-1 rounded font-bold text-sm transition-all cursor-pointer border-2 flex items-center justify-center ${language === "en" ? "bg-blue-900 text-white border-blue-400" : "bg-gray-700 text-gray-400 hover:bg-gray-600 border-gray-500"}`}
+              style={{ boxShadow: '0 2px 6px #222', width: 32, minWidth: 32, maxWidth: 32, height: 22, minHeight: 22, maxHeight: 22, lineHeight: '1.1', textAlign: 'center' }}
+            >
+              EN
+            </button>
+            <span className="text-base">🌐</span>
+            <button
+              onClick={() => setLanguage("es")}
+              className={`px-3 py-1 rounded font-bold text-sm transition-all cursor-pointer border-2 flex items-center justify-center ${language === "es" ? "bg-blue-900 text-white border-blue-400" : "bg-gray-700 text-gray-400 hover:bg-gray-600 border-gray-500"}`}
+              style={{ boxShadow: '0 2px 6px #222', width: 32, minWidth: 32, maxWidth: 32, height: 22, minHeight: 22, maxHeight: 22, lineHeight: '1.1', textAlign: 'center' }}
+            >
+              ES
+            </button>
+          </div>
+        </div>
         <Board
           onStateChange={setBoardState}
           isPaused={showTutorial}

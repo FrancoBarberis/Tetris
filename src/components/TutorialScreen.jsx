@@ -81,10 +81,10 @@ export default function TutorialScreen({ onContinue }) {
             <div className="flex gap-2 items-center">
               <button
                 onClick={() => setLanguage("en")}
-                className={`px-3 py-1 rounded font-bold text-sm transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded font-bold text-sm transition-all cursor-pointer border-2 ${
                   language === "en"
-                    ? "bg-purple-600 text-white"
-                    : "bg-gray-700 text-gray-400 hover:bg-gray-600"
+                    ? "bg-blue-900 text-white border-blue-400"
+                    : "bg-gray-700 text-gray-400 hover:bg-gray-600 border-gray-500"
                 }`}
               >
                 EN
@@ -92,10 +92,10 @@ export default function TutorialScreen({ onContinue }) {
               <span className="text-xl">🌐</span>
               <button
                 onClick={() => setLanguage("es")}
-                className={`px-3 py-1 rounded font-bold text-sm transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded font-bold text-sm transition-all cursor-pointer border-2 ${
                   language === "es"
-                    ? "bg-purple-600 text-white"
-                    : "bg-gray-700 text-gray-400 hover:bg-gray-600"
+                    ? "bg-blue-900 text-white border-blue-400"
+                    : "bg-gray-700 text-gray-400 hover:bg-gray-600 border-gray-500"
                 }`}
               >
                 ES

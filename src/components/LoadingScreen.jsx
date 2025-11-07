@@ -22,13 +22,18 @@ export default function LoadingScreen({ progress = 0 }) {
           style={{ imageRendering: "pixelated" }}
         />
         <p className="text-white text-lg sm:text-xl font-bold mb-4 text-center">Loading resources...</p>
-        <div className="w-full max-w-[220px] h-5 bg-gray-800 overflow-hidden border border-purple-700 mb-2" style={{ borderRadius: '2px' }}>
+        <div className="w-full max-w-[220px] h-5 bg-gray-800 overflow-hidden border border-purple-700 mb-2 relative" style={{ borderRadius: '2px' }}>
           <div
             className="h-full bg-purple-500 transition-all duration-200"
             style={{ width: `${progress}%`, borderRadius: '1px 0 0 1px' }}
           />
+          <span
+            className="absolute left-0 top-0 w-full h-full flex items-center justify-center text-xs font-bold text-purple-100 drop-shadow"
+            style={{ pointerEvents: 'none', userSelect: 'none' }}
+          >
+            {Math.round(progress)}%
+          </span>
         </div>
-        <span className="text-purple-200 mb-1 text-center">{Math.round(progress)}%</span>
       </div>
     </div>
   );
