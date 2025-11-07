@@ -59,8 +59,67 @@ import { useLanguage } from "../contexts/LanguageContext";
 export default function PokemonBox({ pokemon, onChangePokemon }) {
   const { balls, useBall } = usePokeballs();
   const [currentHP, setCurrentHP] = React.useState(null);
+  const [defeated, setDefeated] = React.useState(false);
+  const [resettingHP, setResettingHP] = React.useState(false);
+  const [damaged, setDamaged] = React.useState(false);
   const { language } = useLanguage();
   const TYPE_NAMES = language === "es" ? TYPE_NAMES_ES : TYPE_NAMES_EN;
+
+  // Calcular el HP base del Pokémon
+  const hpStat = pokemon?.stats
+    ? pokemon.stats.find((stat) => stat.stat.name === "hp")?.base_stat || 100
+    : 100;
+
+  // Controla si el HP se está reseteando por cambio de Pokémon
+  React.useEffect(() => {
+    setResettingHP(true);
+    setCurrentHP(hpStat);
+    // Espera un frame para quitar el flag y evitar animación
+    const timeout = setTimeout(() => setResettingHP(false), 10);
+    return () => clearTimeout(timeout);
+  }, [hpStat, pokemon]);
+
+  // Animación de daño no letal
+  React.useEffect(() => {
+    if (currentHP !== null && currentHP > 0 && currentHP < hpStat) {
+      setDamaged(true);
+      const timeout = setTimeout(() => setDamaged(false), 180);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentHP, hpStat]);
+
+  // Animación de derrota: el shake ocurre después de la animación de la barra
+  React.useEffect(() => {
+    if (currentHP === 0) {
+      // Espera el tiempo de la animación de la barra antes de hacer el shake
+      const timeout = setTimeout(() => setDefeated(true), 600);
+      return () => clearTimeout(timeout);
+    } else {
+      setDefeated(false);
+    }
+  }, [currentHP, pokemon]);
+
+  // hpStat ya está declarado arriba
+
+  // Controla si el HP se está reseteando por cambio de Pokémon
+  React.useEffect(() => {
+    setResettingHP(true);
+    setCurrentHP(hpStat);
+    // Espera un frame para quitar el flag y evitar animación
+    const timeout = setTimeout(() => setResettingHP(false), 10);
+    return () => clearTimeout(timeout);
+  }, [hpStat, pokemon]);
+
+  // Animación de derrota: el shake ocurre después de la animación de la barra
+  React.useEffect(() => {
+    if (currentHP === 0) {
+      // Espera el tiempo de la animación de la barra antes de hacer el shake
+      const timeout = setTimeout(() => setDefeated(true), 600);
+      return () => clearTimeout(timeout);
+    } else {
+      setDefeated(false);
+    }
+  }, [currentHP, pokemon]);
   const handleFlee = async () => {
     const { default: getRandomPokemon } = await import("../utils/pokemons");
     getRandomPokemon().then((poke) => {
@@ -105,19 +164,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
     );
   }
 
-  // Vida: solo el stat de HP
-  const hpStat = pokemon.stats
-    ? pokemon.stats.find((stat) => stat.stat.name === "hp")?.base_stat || 0
-    : 0;
-  // Controla si el HP se está reseteando por cambio de Pokémon
-  const [resettingHP, setResettingHP] = React.useState(false);
-  React.useEffect(() => {
-    setResettingHP(true);
-    setCurrentHP(hpStat);
-    // Espera un frame para quitar el flag y evitar animación
-    const timeout = setTimeout(() => setResettingHP(false), 10);
-    return () => clearTimeout(timeout);
-  }, [hpStat, pokemon]);
+  // Elimina duplicados: hpStat y resettingHP ya están declarados arriba
   const percent = currentHP !== null ? Math.max(0, Math.round((currentHP / hpStat) * 100)) : 100;
 
   // Defense factor: suma de defensa y defensa especial
@@ -144,7 +191,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
     setCurrentHP((prev) => {
       const newHP = Math.max(0, prev - damage);
       if (newHP === 0) {
-        // Esperar a que la animación de la barra termine antes de cambiar el Pokémon
+        // Esperar a que la animación de la barra y la animación de derrota terminen antes de cambiar el Pokémon
         setTimeout(() => {
           if (typeof onChangePokemon === 'function') {
             const getRandomPokemonAsync = async () => {
@@ -154,7 +201,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
             };
             getRandomPokemonAsync();
           }
-        }, 600); // Duración de la animación de la barra (coincide con transition)
+        }, 1300); // 600ms barra + 700ms animación sprite
       }
       return newHP;
     });
@@ -220,21 +267,71 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
           preload="auto"
         />
         <p className="text-yellow-600 font-bold text-2xl mb-2 drop-shadow cursor-default text-center w-full">
-          N° {pokemon.id}
+          <span style={{
+            minWidth: '56px',
+            display: 'inline-block',
+            fontVariantNumeric: 'tabular-nums',
+            fontFamily: 'monospace',
+            textAlign: 'center',
+          }}>
+            N° {pokemon.id}
+          </span>
         </p>
         {pokemon.sprites.front_default ? (
-          <div className="flex items-center justify-center w-fit h-fit bg-yellow-200 rounded border-4 border-red-900 mb-3 shadow-md">
-            <img
-              src={pokemon.sprites.front_default}
-              alt={pokemon.name}
-              className="w-36 h-36 xl:w-52 xl:h-52 drop-shadow"
-              style={{ imageRendering: "pixelated" }}
-              onError={(e) => {
-                e.target.style.display = "none";
-                e.target.parentNode.innerHTML +=
-                  '<span class="text-red-600">Error al cargar sprite</span>';
-              }}
-            />
+          <div
+            className="flex items-center justify-center bg-yellow-200 rounded border-4 border-red-900 mb-3 shadow-md overflow-hidden"
+            style={{ position: 'relative', minHeight: '144px', width: '144px', height: '144px', maxWidth: '208px', maxHeight: '208px' }}
+          >
+            {(currentHP !== 0 || !defeated) ? (
+              <img
+                src={pokemon.sprites.front_default}
+                alt={pokemon.name}
+                className="w-36 h-36 xl:w-52 xl:h-52 drop-shadow"
+                style={{ imageRendering: "pixelated", position: 'absolute', left: 0, top: 0, zIndex: 2, transition: defeated ? 'transform 0.7s cubic-bezier(.68,-0.55,.27,1.55), opacity 0.3s' : 'none', width: '100%', height: '100%' }}
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.parentNode.innerHTML +=
+                    '<span class=\"text-red-600\">Error al cargar sprite</span>';
+                }}
+              />
+            ) : (
+              <span
+                className="drop-shadow flex items-center justify-center"
+                style={{ position: 'absolute', left: 0, top: 0, zIndex: 2, opacity: 0, width: '100%', height: '100%' }}
+              ></span>
+            )}
+            {/* Animación CSS */}
+            <style>{`
+              .defeated-pokemon {
+                animation: shake-poke 0.14s 2, fall-poke 0.48s 0.32s forwards;
+              }
+              .damaged-pokemon {
+                animation: shake-damage 0.18s 1;
+              }
+              @keyframes shake-poke {
+                0% { transform: translateX(0); }
+                15% { transform: translateX(-5px); }
+                30% { transform: translateX(5px); }
+                45% { transform: translateX(-4px); }
+                60% { transform: translateX(4px); }
+                75% { transform: translateX(-2px); }
+                90% { transform: translateX(2px); }
+                100% { transform: translateX(0); }
+              }
+              @keyframes shake-damage {
+                0% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                50% { transform: translateX(5px); }
+                75% { transform: translateX(-3px); }
+                100% { transform: translateX(0); }
+              }
+              @keyframes fall-poke {
+                0% { opacity: 1; transform: translateY(0); }
+                60% { opacity: 1; transform: translateY(40px); }
+                80% { opacity: 0.7; transform: translateY(90px); }
+                100% { opacity: 0; transform: translateY(130px); }
+              }
+            `}</style>
           </div>
         ) : (
           <div className="w-40 h-40 xl:w-56 xl:h-56 flex items-center justify-center bg-gray-700 text-white mb-2 rounded border-2 border-gray-300">
@@ -244,12 +341,23 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
         {/* Barra de vida */}
         <div className="w-full ">
           <div className="text-md text-green-200 font-bold mb-1 text-center drop-shadow cursor-default">
-            HP: {currentHP !== null ? currentHP : hpStat} / {hpStat}
+            <span style={{
+              minWidth: '72px',
+              display: 'inline-block',
+              fontVariantNumeric: 'tabular-nums',
+              fontFamily: 'monospace',
+              textAlign: 'center',
+            }}>
+              HP: {currentHP !== null ? currentHP : hpStat} / {hpStat}
+            </span>
           </div>
           <div className="w-full h-6 bg-gray-700 rounded-xs overflow-hidden border-black border-2">
             <div
               className={`h-full bg-green-300 shadow${resettingHP ? '' : ' transition-all duration-500'}`}
-              style={{ width: `${percent}%` }}
+              style={{
+                width: `${percent}%`,
+                transition: resettingHP ? 'none' : 'width 0.5s',
+              }}
             />
           </div>
         </div>
