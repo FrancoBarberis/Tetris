@@ -13,11 +13,11 @@ function PokeballHTML({ className, idx }) {
   // El evento de compra se maneja en el contenedor padre
   return (
     //POKEBALLS
-    <div className="relative flex items-center justify-end w-[16vw] max-w-[220px] min-w-[120px] h-[3.5vw] max-h-[56px] min-h-[36px] overflow-hidden p-0 m-0 ">
+    <div className="relative flex items-center justify-end w-[16vw] max-w-[220px] min-w-[120px] h-[3.5vw] max-h-[56px] min-h-[36px] overflow-hidden p-0 m-0">
       {/* Nombre arriba a la izquierda */}
       <span className="absolute top-0 left-0 font-bold text-white text-[0.75vw] uppercase opacity-85 z-20 text-left px-[2px] pt-[2px]" style={{textShadow: '0 1px 4px #222', letterSpacing: '0'}}>{pokeballs[idx].name}</span>
       <span className="absolute left-0 bottom-0 text-yellow-300 font-bold text-left opacity-70 pointer-events-none text-[1.3vw] px-[2px] pb-[2px]">${pokeballs[idx].price}</span>
-      <div className={className + " transition-transform duration-200 group-hover:scale-300 group-hover:rotate-12 group-hover:brightness-110 relative w-[5vw] h-[5vw] min-w-[40px] min-h-[40px] max-w-[80px] max-h-[80px]"} >
+      <div className={className + " transition-transform duration-200 group-hover:scale-300 group-hover:rotate-12 group-hover:brightness-110  w-[5vw] h-[5vw] min-w-[40px] min-h-[40px] max-w-[80px] max-h-[80px] scale-120"} >
         <span className="pokeball-inner" style={{width: "12%", height: "12%"}} />
       </div>
     </div>

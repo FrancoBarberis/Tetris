@@ -10,9 +10,9 @@ export default function GameOverModal({ score, onRestart, title = 'Game Over' })
   }, []);
   return (
     // Contenedor fijo que cubre toda la pantalla pero no oculta el DOM de fondo
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-30">
       {/* Overlay semitransparente con blur y gradiente */}
-  <div className="absolute inset-0 bg-gradient-to-b from-gray-500/10 to-gray-600/10 backdrop-blur-md" />
+  <div className="absolute inset-0 bg-gradient-to-b from-gray-500/10 to-gray-600/10 backdrop-blur-md z-40" />
 
       {/* Modal visualmente consistente con el layout principal */}
       <div className="game-over-modal relative max-w-sm w-full mx-4 pointer-events-auto">

@@ -14,7 +14,7 @@ function PokeballButton({ type, label, color, disabled, onClick, style }) {
   // Tamaño forzado para Pokémon Box (mini pokeballs)
   return (
     <button
-      className={`flex flex-col relative items-center rounded focus:outline-none transition-transform w-fit ${disabled ? "opacity-50 cursor-not-allowed grayscale" : "hover:scale-105 cursor-pointer"}`}
+      className={`z-30 flex flex-col relative items-center rounded focus:outline-none transition-transform w-fit ${disabled ? "opacity-50 cursor-not-allowed grayscale" : "hover:scale-105 cursor-pointer"}`}
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
       style={{ padding: 0, margin: 0, minWidth: 0, width: '28px', height: '28px', ...style }}
@@ -287,8 +287,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
 
   return (
     <div
-      className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-3 flex flex-col items-center w-fit min-w-[180px] xl:min-w-[220px] mr-2 xl:mr-5 max-h-fit"
-      style={{ opacity: 0.7 }}
+      className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-3 flex flex-col items-center w-fit xl:min-w-[220px] mr-2 xl:mr-5 max-h-fit max-w-50 min-w-2 z-20 opacity-85"
     >
       {/* Botón de huir */}
       <div className="w-full flex justify-center mb-2">
@@ -301,7 +300,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
           </button>
       </div>
       {/* Botones de pokeballs */}
-  <div className="w-full flex flex-row justify-center mb-0 gap-2">
+  <div className="w-full h-fit flex flex-row justify-center mb-0 gap-2 bg-white">
         <PokeballButton
           type="normal"
           color="#E53E3E"

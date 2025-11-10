@@ -330,7 +330,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   }, [nextPiece, score]);
 
   return (
-    <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0">
+    <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0 z-20">
       {/* Tablero y box del Pokémon */}
       <div className="game-container flex flex-row items-center justify-around w-fit max-w-7xl mx-auto gap-3">
         <div className="flex-1 flex items-center justify-center">

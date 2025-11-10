@@ -9,6 +9,7 @@ import PokemonBox from "./components/PokemonBox";
 import PokeballSidebar from "./components/PokeballSidebar";
 import getRandomPokemon from "./utils/pokemons";
 import pokemonShop from "./assets/PokemonShop3rdGen.png";
+import HighGrass from "./assets/HighGrass.png";
 
 function App() {
   const [bgEntering, setBgEntering] = useState(false);
@@ -122,10 +123,10 @@ function App() {
               style={{
                 height: '200vh',
                 width: 'auto',
-                opacity: 0.3,
+                opacity: .7,
                 filter: 'drop-shadow(0 0 32px #000)',
                 objectFit: 'contain',
-                right: '-10vw',
+                right: '-20vw',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 animation: bgEntering ? 'bg-fade-in-up 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards' : 'none',
@@ -136,16 +137,18 @@ function App() {
       <img
         src={pokemonShop}
         alt="PokemonShop"
-        className="pointer-events-none select-none absolute z-0"
+        className="pointer-events-none select-none absolute z-20"
         style={{
           height: 'min(14vw, 22vh)',
           width: 'auto',
-          opacity: 0.22,
+          opacity: 1,
           left: '2vw',
-          top: 'calc(15vh + 32px)', // alineada con las pokeballs del sidebar
+          top: 'calc(15vh + 25px)', // alineada con las pokeballs del sidebar
           objectFit: 'contain',
         }}
       />
+      {/* HIERBA ALTA */}
+      <img src={HighGrass} alt="HighGrass" className="pointer-events-none select-none absolute z-10 -bottom-20 w-full h-8/12 opacity-70"  />
       <Header
         nextPiece={boardState.nextPiece}
         score={boardState.score}
