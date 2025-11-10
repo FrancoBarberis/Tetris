@@ -102,7 +102,7 @@ export default function TutorialScreen({ onContinue }) {
               </button>
             </div>
             <button
-              className="px-7 py-2 bg-gradient-to-r from-black via-purple-900 to-black text-purple-200 rounded font-bold shadow hover:scale-105 transition-transform ring-2 ring-black/30 cursor-pointer uppercase min-w-[120px]"
+              className="play-button px-7 py-2 bg-gradient-to-r from-black via-purple-900 to-black text-purple-200 rounded font-bold shadow hover:scale-105 transition-transform ring-2 ring-black/30 cursor-pointer uppercase min-w-[120px]"
               onClick={onContinue}
             >
               {t.playButton}
