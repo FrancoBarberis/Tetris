@@ -5,10 +5,10 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
 
 const pokeballs = [
-  { className: "pokeball pokeball-normal", price: 50, name: "NORMAL" },
-  { className: "pokeball pokeball-super", price: 120, name: "SUPER" },
-  { className: "pokeball pokeball-ultra", price: 350, name: "ULTRA" },
-  { className: "pokeball pokeball-master", price: 999, name: "MASTER" },
+  { className: "pokeball pokeball-normal", price: 5, name: "NORMAL" },
+  { className: "pokeball pokeball-super", price: 15, name: "SUPER" },
+  { className: "pokeball pokeball-ultra", price: 50, name: "ULTRA" },
+  { className: "pokeball pokeball-master", price: 100, name: "MASTER" },
 ];
 
 function PokeballHTML({ className, idx }) {
@@ -26,7 +26,7 @@ function PokeballHTML({ className, idx }) {
   );
 }
 
-export default function PokeballSidebar({ score }) {
+export default function PokeballSidebar({ score, updateScore }) {
   const { language } = useLanguage();
   const { addBall } = usePokeballs();
   const [activeIdx, setActiveIdx] = useState(null);
@@ -36,6 +36,8 @@ export default function PokeballSidebar({ score }) {
     const price = pokeballs[idx].price;
     if (score >= price) {
       addBall(idx);
+      // Reducir créditos
+      updateScore(score - price);
       // Agregar animación de +1
       const animId = Date.now();
       setPurchaseAnimations(prev => [...prev, { id: animId, idx }]);
@@ -56,7 +58,7 @@ export default function PokeballSidebar({ score }) {
   return (
     <div className="relative z-30">
       {/* Display de créditos */}
-      <div className="mb-3 text-center bg-gradient-to-r from-black via-yellow-900 to-black p-2 rounded border-2 border-yellow-600 relative z-30">
+      <div className="mb-3 text-center p-2 rounded relative z-30 shadow-lg" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
         <span className="text-yellow-300 font-bold text-lg uppercase tracking-wide">{t.credits}: </span>
         <span className="text-yellow-100 font-extrabold text-xl">${score}</span>
       </div>
@@ -64,8 +66,9 @@ export default function PokeballSidebar({ score }) {
       <div className="pokeball-sidebar flex flex-col gap-1.5 items-end h-fit w-full justify-start mt-2">
         {pokeballs.map((ball, idx) => (
           <div
-            className={`group bg-gradient-to-l from-black via-red-900 to-blue-950 z-10 flex items-center transition-all duration-200 hover:brightness-125 cursor-pointer w-full h-auto justify-end relative box-border overflow-hidden min-w-[12vw] max-w-[20vw] p-0 m-0`}
+            className={`group bg-gradient-to-l from-black via-red-900 to-blue-950 z-10 flex items-center transition-all duration-200 hover:brightness-125 cursor-pointer w-full h-auto justify-end box-border overflow-visible min-w-[12vw] max-w-[20vw] p-0 m-0`}
             key={idx}
+            style={{ position: 'relative' }}
           >
             <div 
               className={`w-full h-full ${activeIdx === idx ? 'scale-95' : ''} transition-transform duration-200`}
@@ -77,12 +80,15 @@ export default function PokeballSidebar({ score }) {
               <PokeballHTML className={ball.className} idx={idx} />
             </div>
             
-            {/* Animación +1 */}
+            {/* Animación +1 fuera del contenedor, a la derecha */}
             {purchaseAnimations.filter(a => a.idx === idx).map(anim => (
               <div
                 key={anim.id}
-                className="absolute right-0 top-1/2 text-green-400 font-bold text-2xl pointer-events-none z-30"
+                className="absolute text-green-400 font-bold text-2xl pointer-events-none z-40"
                 style={{
+                  left: 'calc(100% + 10px)',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
                   animation: 'purchase-notification 1s ease-out forwards',
                   textShadow: '0 0 8px #000, 0 0 4px #0f0'
                 }}

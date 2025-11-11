@@ -8,17 +8,16 @@ import Logo from "../assets/poketrisLOGO.png";
 // TODO:
 // WHEN A COLUMN IS CLEARED AND THE REMAINING PIECES MOVE TO THE RIGHT, IF ANOTHER FULL COLUMN IS FORMED, IT DOES NOT GET CLEARED
 
-export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
+export default function Board({ pokemonBox, onStateChange, onScoreIncrement, currentScore, isPaused = false }) {
   const rows = 12;
   const cols = 25;
-  const gravitySpeed = 400;
+  const gravitySpeed = 600; // Reducido de 400ms a 600ms para hacerlo más lento
   const previewCell = 24;
   const previewBox = 72;
 
   const [activePiece, setActivePiece] = useState(null);
   const [activePosition, setActivePosition] = useState(null);
   const [nextPiece, setNextPiece] = useState(getRandomShape());
-  const [score, setScore] = useState(0);
   const [board, setBoard] = useState(Array.from({ length: rows }, () => Array(cols).fill(null)));
   const [gameOver, setGameOver] = useState(false);
   const [colsFading, setColsFading] = useState([]);
@@ -226,7 +225,9 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
     }
 
     if (colsToClear.length > 0) {
-      setScore((prev) => prev + colsToClear.length * 100);
+      if (onScoreIncrement) {
+        onScoreIncrement(colsToClear.length * 100);
+      }
       setColsFading(colsToClear); // Guardar columnas en fade-out
       // Marcar las celdas a eliminar con fade-out antes de borrarlas
       // Solidificar la pieza y aplicar fade-out a las columnas a borrar
@@ -287,12 +288,15 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
     spawnPiece();
   }
 
-  function restartGame() {
+  const restartGame = () => {
     const emptyBoard = Array.from({ length: rows }, () => Array(cols).fill(null));
     setBoard(emptyBoard);
     boardRef.current = emptyBoard;
     resetBag();
-    setScore(0);
+    // No establecer score aquí, se manejará desde App.jsx si es necesario
+    if (onStateChange) {
+      onStateChange({ nextPiece: getRandomShape(), score: 0, shapeColors });
+    }
     setGameOver(false);
     setNextPiece(getRandomShape());
     setActivePiece(null);
@@ -379,7 +383,9 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
     if (gameOver || isPaused) return;
 
     const scoreInterval = setInterval(() => {
-      setScore((prev) => prev + 1);
+      if (onScoreIncrement) {
+        onScoreIncrement(1);
+      }
     }, 1000);
     return () => clearInterval(scoreInterval);
   }, [gameOver, isPaused]);
@@ -396,9 +402,9 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
 
   useEffect(() => {
     if (onStateChange) {
-      onStateChange({ nextPiece, score, shapeColors });
+      onStateChange({ nextPiece, score: currentScore, shapeColors });
     }
-  }, [nextPiece, score]);
+  }, [nextPiece, currentScore]);
 
   return (
     <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0 z-20">
@@ -474,7 +480,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
         </div>
       </div>
       {/* El tablero siempre se renderiza; el modal aparece encima como un popup */}
-      {gameOver && <GameOverModal score={score} onRestart={restartGame} />}
+      {gameOver && <GameOverModal score={currentScore} onRestart={restartGame} />}
     </div>
   );
 }

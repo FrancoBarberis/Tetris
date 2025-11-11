@@ -76,15 +76,13 @@ function App() {
 
   // Entrar automáticamente al juego cuando todo esté listo
   // Solo entrar cuando la barra esté llena Y el gif haya terminado 2 ciclos completos
-  // Consultar el Pokémon durante la carga
+  // Consultar el Pokémon durante la carga (solo una vez)
   useEffect(() => {
-    if (!pokemonActual) {
-      getRandomPokemon().then((poke) => {
-        setPokemonActual(poke);
-        // No establecer backgroundSprite aquí, dejar que el otro useEffect lo maneje
-      });
-    }
-  }, [pokemonActual]);
+    getRandomPokemon().then((poke) => {
+      setPokemonActual(poke);
+      // No establecer backgroundSprite aquí, dejar que el otro useEffect lo maneje
+    });
+  }, []); // Sin dependencias para que solo se ejecute una vez
 
   useEffect(() => {
     if (displayProgress === 100 && gifCyclesAfterFull >= 2 && loading) {
@@ -97,6 +95,23 @@ function App() {
   // Board devolverá nextPiece, score y shapeColors como props
   const [boardState, setBoardState] = useState({ nextPiece: null, score: 0, shapeColors: {} });
   const [boardKey, setBoardKey] = useState(0);
+  const [credits, setCredits] = useState(100); // Créditos iniciales separados del score
+
+  // Función para actualizar el score desde fuera del Board
+  const updateScore = (newScore) => {
+    setBoardState(prev => ({ ...prev, score: newScore }));
+  };
+  
+  // Función para incrementar el score (usado por Board) - también incrementa créditos
+  const incrementScore = (points) => {
+    setBoardState(prev => ({ ...prev, score: prev.score + points }));
+    setCredits(prev => prev + points); // Los créditos aumentan con los puntos
+  };
+  
+  // Función para actualizar solo los créditos (usado por compras)
+  const updateCredits = (newCredits) => {
+    setCredits(newCredits);
+  };
 
   if (loading || displayProgress < 100 || gifCyclesAfterFull < 2) {
     return (
@@ -156,9 +171,18 @@ function App() {
       />
       <div className="application-container flex flex-row w-full flex-grow min-h-0 items-center justify-between relative">
   <div className="relative flex flex-col items-end">
-          <PokeballSidebar score={boardState.score} />
-          {/* Switch de idioma abajo a la izquierda, compacto */}
+          <PokeballSidebar score={credits} updateScore={updateCredits} />
+          {/* Switch de idioma y botón de ayuda abajo a la izquierda, compacto */}
           <div className="fixed bottom-3 left-3 z-50 flex gap-1 items-center">
+            <button
+              onClick={() => setShowTutorial(true)}
+              className="px-3 py-1 rounded font-bold text-sm transition-all cursor-pointer border-2 flex items-center justify-center bg-purple-700 text-white border-purple-400 hover:bg-purple-600"
+              style={{ boxShadow: '0 2px 6px #222', width: 32, minWidth: 32, maxWidth: 32, height: 22, minHeight: 22, maxHeight: 22, lineHeight: '1.1', textAlign: 'center' }}
+              title={language === "es" ? "Ayuda" : "Help"}
+            >
+              ?
+            </button>
+            <span className="text-base">|</span>
             <button
               onClick={() => setLanguage("en")}
               className={`px-3 py-1 rounded font-bold text-sm transition-all cursor-pointer border-2 flex items-center justify-center ${language === "en" ? "bg-blue-900 text-white border-blue-400" : "bg-gray-700 text-gray-400 hover:bg-gray-600 border-gray-500"}`}
@@ -180,6 +204,8 @@ function App() {
           <Board
             key={boardKey}
             onStateChange={setBoardState}
+            onScoreIncrement={incrementScore}
+            currentScore={boardState.score}
             isPaused={showTutorial}
           />
         </div>

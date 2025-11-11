@@ -1,54 +1,59 @@
 import pokeballIcon from "../assets/pokeball.png";
 import { usePokeballs } from "../contexts/PokeballContext";
 
-function PokeballButton({ type, label, color, disabled, onClick, style }) {
-  // Clases para cada tipo de pokeball
-  // Colores y banda para SVG pokeball
-  const ballSVG = {
-    normal: { top: "#EE1C25", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
-    super: { top: "#2A4BA0", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
+// Configuración de colores para cada tipo de pokeball
+const POKEBALL_COLORS = {
+  normal: { top: "#EE1C25", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
+  super: { top: "#2A4BA0", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
   ultra: { top: "#3B3B3B", bottom: "#FFF", band: "#FFD700", button: "#FFF", buttonBorder: "#222" },
-    master: { top: "#A040A0", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
-  };
-  const svg = ballSVG[type] || ballSVG.normal;
-  // Tamaño forzado para Pokémon Box (mini pokeballs)
+  master: { top: "#A040A0", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
+};
+
+// Componente SVG reutilizable para pokeballs
+function PokeballSVG({ type, size = 32, idPrefix = '' }) {
+  const colors = POKEBALL_COLORS[type] || POKEBALL_COLORS.normal;
+  
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id={`${idPrefix}top-${type}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={colors.top} />
+          <stop offset="100%" stopColor={colors.top} />
+        </linearGradient>
+        <linearGradient id={`${idPrefix}bottom-${type}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={colors.bottom} />
+          <stop offset="100%" stopColor={colors.bottom} />
+        </linearGradient>
+      </defs>
+      <path d="M 4,24 a 20,20 0 1,1 40,0" fill={`url(#${idPrefix}top-${type})`} stroke={colors.band} strokeWidth="2.5" />
+      <path d="M 44,24 a 20,20 0 1,1 -40,0" fill={`url(#${idPrefix}bottom-${type})`} stroke={colors.band} strokeWidth="2.5" />
+      <rect x="4" y="22.5" width="40" height="3" fill={colors.band} />
+      <circle cx="24" cy="24" r="7" fill={colors.button} stroke={colors.buttonBorder} strokeWidth="2" />
+    </svg>
+  );
+}
+
+function PokeballButton({ type, label, color, disabled, onClick, style }) {
   return (
     <button
-      className={`z-30 flex flex-col relative items-center rounded focus:outline-none transition-transform w-fit ${disabled ? "opacity-50 cursor-not-allowed grayscale" : "hover:scale-105 cursor-pointer"}`}
+      className={`z-30 flex flex-col items-center justify-center rounded focus:outline-none transition-transform relative ${disabled ? "opacity-50 cursor-not-allowed grayscale" : "hover:scale-110 cursor-pointer"}`}
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
-      style={{ padding: 0, margin: 0, minWidth: 0, width: '28px', height: '28px', ...style }}
+      style={{ padding: '6px', margin: 0, width: 'fit-content', height: 'fit-content', background: 'rgba(30,30,40,0.7)', borderRadius: '8px', ...style }}
     >
-      <div className="flex flex-col items-center justify-center rounded-full shadow-md" style={{ width: '24px', height: '24px', minWidth: '24px', maxWidth: '24px', background: 'rgba(30,30,40,0.85)', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', padding: '0' }}>
-        <svg width="18" height="18" viewBox="0 0 40 40" style={{ display: 'block', margin: '0', padding: 0 }}>
-          <defs>
-            <linearGradient id={`top-${type}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={svg.top} />
-              <stop offset="100%" stopColor={svg.top} />
-            </linearGradient>
-            <linearGradient id={`bottom-${type}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={svg.bottom} />
-              <stop offset="100%" stopColor={svg.bottom} />
-            </linearGradient>
-          </defs>
-          {/* Top half */}
-          <path d="M8,20 a16,16 0 1,1 32,0" fill={`url(#top-${type})`} stroke={svg.band} strokeWidth="2.5" />
-          {/* Bottom half */}
-          <path d="M40,20 a16,16 0 1,1 -32,0" fill={`url(#bottom-${type})`} stroke={svg.band} strokeWidth="2.5" />
-          {/* Band */}
-          <rect x="8" y="19" width="32" height="3.5" fill={svg.band} />
-          {/* Button */}
-          <circle cx="20" cy="20" r="6" fill={svg.button} stroke={svg.buttonBorder} strokeWidth="2" />
-        </svg>
-        <div className="flex flex-col items-center w-full">
-          <span
-            className="text-[7px] font-bold text-white drop-shadow text-center pb-0"
-            style={{ lineHeight: "1.1", marginTop: '1px', textAlign: 'center', padding: 0, margin: 0 }}
-          >
-            {label}
-          </span>
-        </div>
-      </div>
+      <PokeballSVG type={type} size={32} idPrefix="btn-" />
+      {/* Contador debajo del SVG con más separación */}
+      <span
+        className="text-white font-bold text-xs drop-shadow"
+        style={{ 
+          marginTop: '4px',
+          textShadow: '0 0 4px #000, 1px 1px 2px #000',
+          lineHeight: '1',
+          fontSize: '10px'
+        }}
+      >
+        {label}
+      </span>
     </button>
   );
 }
@@ -102,6 +107,9 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
   const [defeated, setDefeated] = React.useState(false);
   const [resettingHP, setResettingHP] = React.useState(true);
   const [damaged, setDamaged] = React.useState(false);
+  const [damageAnimations, setDamageAnimations] = React.useState([]);
+  const [captureNotification, setCaptureNotification] = React.useState(null);
+  const [capturedWithBall, setCapturedWithBall] = React.useState(null);
   const { language } = useLanguage();
   const TYPE_NAMES = language === "es" ? TYPE_NAMES_ES : TYPE_NAMES_EN;
   const isFirstPokemon = React.useRef(true);
@@ -251,17 +259,30 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
 
   // Daño según tipo de ball
   const getBallDamage = (ballIndex) => {
-    // Puedes ajustar los valores base según el tipo de ball
-    const baseDamages = [10, 20, 35, 100]; // normal, super, ultra, master
-    const base = baseDamages[ballIndex] || 10;
-    // El daño se reduce por el defenseFactor
-    const damage = Math.max(1, Math.round(base - defenseFactor * 0.1));
+    // Precios: 5, 15, 50, 100
+    // Daño proporcional al precio: precio * 1 = daño base
+    const prices = [5, 15, 50, 100];
+    const baseDamage = prices[ballIndex];
+    
+    // El defenseFactor reduce el daño como porcentaje
+    // defenseFactor es la suma de defense + special-defense
+    const reductionPercent = Math.min(0.5, defenseFactor * 0.001); // Max 50% de reducción
+    const damage = Math.max(5, Math.round(baseDamage * (1 - reductionPercent)));
+    
     return damage;
   };
 
   const handleUseBall = (ballIndex) => {
     if (balls[ballIndex] === 0 || currentHP === 0) return;
     const damage = getBallDamage(ballIndex);
+    
+    // Agregar animación de daño
+    const damageId = Date.now();
+    setDamageAnimations(prev => [...prev, { id: damageId, damage }]);
+    setTimeout(() => {
+      setDamageAnimations(prev => prev.filter(d => d.id !== damageId));
+    }, 1000);
+    
     setCurrentHP((prev) => {
       const newHP = Math.max(0, prev - damage);
       if (newHP === 0) {
@@ -270,6 +291,19 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
         setTimeout(() => setDamaged(false), 180);
         // Shake letal tras vaciar la barra
         setTimeout(() => setDefeated(true), 600);
+        
+        // Mostrar notificación de captura con sprite y pokeball
+        const captureName = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+        const captureText = language === "es" 
+          ? `¡Capturaste a ${captureName}!` 
+          : `You caught ${captureName}!`;
+        setCaptureNotification(captureText);
+        setCapturedWithBall(ballIndex); // Guardar qué ball se usó
+        setTimeout(() => {
+          setCaptureNotification(null);
+          setCapturedWithBall(null);
+        }, 3000);
+        
         // Esperar a que la animación de la barra y la animación de derrota terminen antes de cambiar el Pokémon
         setTimeout(() => {
           if (typeof onChangePokemon === 'function') {
@@ -292,20 +326,68 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
 
   return (
     <div
-      className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-3 flex flex-col items-center w-fit xl:min-w-[220px] mr-2 xl:mr-5 max-h-fit max-w-50 min-w-2 z-20 opacity-85"
+      className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-3 flex flex-col items-center mr-2 xl:mr-5 max-h-fit z-20 opacity-85"
+      style={{ width: '240px', minWidth: '240px', maxWidth: '240px', position: 'relative' }}
     >
+      {/* Notificación de captura */}
+      {captureNotification && (
+        <div
+          className="absolute top-0 left-1/2 z-50 bg-green-600 text-white font-bold px-4 py-3 rounded shadow-lg pointer-events-none flex flex-col items-center gap-2"
+          style={{
+            transform: 'translateX(-50%) translateY(-120%)',
+            animation: 'capture-notification 3s ease-out forwards',
+            textShadow: '0 0 8px #000',
+            minWidth: '200px'
+          }}
+        >
+          <div className="text-sm whitespace-nowrap">{captureNotification}</div>
+          <div className="flex items-center gap-3">
+            {/* Sprite del Pokémon capturado */}
+            {pokemon?.sprites?.front_default && (
+              <img
+                src={pokemon.sprites.front_default}
+                alt={pokemon.name}
+                className="w-12 h-12"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            )}
+            {/* SVG de la pokeball usada */}
+            {capturedWithBall !== null && (
+              <div>
+                <PokeballSVG 
+                  type={['normal', 'super', 'ultra', 'master'][capturedWithBall]} 
+                  size={48} 
+                  idPrefix="capture-"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* Animación CSS para la notificación de captura */}
+      <style>{`
+        @keyframes capture-notification {
+          0% { opacity: 0; transform: translateX(-50%) translateY(-140%); }
+          10% { opacity: 1; transform: translateX(-50%) translateY(-120%); }
+          90% { opacity: 1; transform: translateX(-50%) translateY(-120%); }
+          100% { opacity: 0; transform: translateX(-50%) translateY(-120%); }
+        }
+      `}</style>
+      
       {/* Botón de huir */}
       <div className="w-full flex justify-center mb-2">
           <button
-            className="bg-gradient-to-r from-red-700 to-black text-white font-bold px-3 py-2 rounded shadow hover:scale-105 hover:brightness-150 transition-transform text-xs uppercase cursor-pointer mb-2 min-w-[54px] xl:min-w-[60px] max-w-[80px] text-center whitespace-nowrap"
+            className="bg-gradient-to-r from-red-700 to-black text-white font-bold px-3 py-2 rounded shadow hover:scale-105 hover:brightness-150 transition-transform text-xs uppercase cursor-pointer mb-2 min-w-[54px] xl:min-w-[60px] max-w-[80px] text-center whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:brightness-100"
             onClick={handleFlee}
+            disabled={entering}
             style={{paddingLeft: '12px', paddingRight: '12px', paddingTop: '8px', paddingBottom: '8px'}}
           >
             {language === "es" ? "Huir" : "Flee"}
           </button>
       </div>
-      {/* Botones de pokeballs */}
-  <div className="w-full h-fit flex flex-row justify-center mb-0 gap-2 bg-white">
+      {/* Botones de pokeballs en una franja oscura */}
+      <div className="w-full h-fit flex flex-row justify-center mb-2 gap-2 p-2 rounded" style={{ background: 'rgba(20, 20, 30, 0.85)' }}>
         <PokeballButton
           type="normal"
           color="#E53E3E"
@@ -357,7 +439,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
         </p>
         {pokemon.sprites.front_default ? (
           <div
-            className="flex items-center justify-center bg-yellow-200 rounded border-4 border-red-900 mb-3 shadow-md overflow-hidden"
+            className="flex items-center justify-center bg-yellow-200 rounded border-4 border-red-900 mb-2 shadow-md overflow-hidden"
             style={{ position: 'relative', minHeight: '144px', width: '144px', height: '144px', maxWidth: '208px', maxHeight: '208px' }}
           >
             {(!hideSprite && pokemon.sprites.front_default) ? (
@@ -453,7 +535,32 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
               className={`absolute left-0 top-0 h-full ${hpColor} transition-all duration-500 shadow-lg`}
               style={{ width: `${percent}%`, zIndex: 10, transition: resettingHP ? 'none' : 'width 0.5s' }}
             />
+            
+            {/* Animaciones de daño */}
+            {damageAnimations.map(anim => (
+              <div
+                key={anim.id}
+                className="absolute text-red-500 font-bold text-xl pointer-events-none z-50"
+                style={{
+                  left: '50%',
+                  top: '-8px',
+                  transform: 'translateX(-50%)',
+                  animation: 'damage-float 1s ease-out forwards',
+                  textShadow: '0 0 8px #000, 0 0 4px #f00, 1px 1px 0 #fff, -1px -1px 0 #fff'
+                }}
+              >
+                -{anim.damage}
+              </div>
+            ))}
           </div>
+          
+          {/* Animación CSS para el daño flotante */}
+          <style>{`
+            @keyframes damage-float {
+              0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+              100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+            }
+          `}</style>
         </div>
         <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full mt-1 mb-0">
           <span></span>
@@ -463,17 +570,22 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
           <span></span>
         </div>
         {/* Tipos al final */}
-        <div className="flex gap-2 mt-3 justify-center w-full flex-nowrap min-h-[32px]">
+        <div className="flex gap-2 mt-2 justify-center w-full flex-nowrap min-h-[32px]">
           {(pokemon.types || []).map((t) => (
             <span
               key={t.type.name}
-              className="px-2 py-1 rounded text-xs font-bold uppercase shadow cursor-default w-[90px] truncate text-center overflow-hidden"
+              className="px-2 rounded text-xs font-bold uppercase shadow cursor-default w-[90px] truncate text-center overflow-hidden"
               style={{
                 background: TYPE_COLORS[t.type.name] || "#fff",
                 color: "#222",
                 letterSpacing: "1px",
                 filter: "brightness(1.1)",
-                display: 'inline-block',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingTop: '6px',
+                paddingBottom: '6px',
+                lineHeight: '1',
               }}
             >
               {TYPE_NAMES[t.type.name] || t.type.name}
