@@ -30,6 +30,7 @@ export default function Header({ nextPiece, score, shapeColors, previewCell = 18
         src={Logo}
         alt="Pokétris Logo"
       />
+      
       <div className="box-next-piece rounded-xs bg-gradient-to-b from-blue-900 to-black shadow-md flex flex-col items-center justify-center py-1 cursor-default" style={{ width: `${previewBoxAdjusted + 64}px`, minHeight: `${previewBoxAdjusted + 8}px`, position: 'relative' }}>
         <div className="w-full flex flex-col items-center justify-center" style={{padding: '6px 0', minHeight: `${previewBoxAdjusted + 8}px`, justifyContent: 'center'}}>
           <span

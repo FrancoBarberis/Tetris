@@ -11,9 +11,41 @@ import getRandomPokemon from "./utils/pokemons";
 import pokemonShop from "./assets/PokemonShop3rdGen.png";
 import HighGrass from "./assets/HighGrass.png";
 
+// Importar componente PokeballSVG para la notificación de captura
+function PokeballSVG({ type, size = 32, idPrefix = '' }) {
+  const POKEBALL_COLORS = {
+    normal: { top: "#EE1C25", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
+    super: { top: "#2A4BA0", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
+    ultra: { top: "#3B3B3B", bottom: "#FFF", band: "#FFD700", button: "#FFF", buttonBorder: "#222" },
+    master: { top: "#A040A0", bottom: "#FFF", band: "#222", button: "#FFF", buttonBorder: "#CCC" },
+  };
+  const colors = POKEBALL_COLORS[type] || POKEBALL_COLORS.normal;
+  
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id={`${idPrefix}top-${type}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={colors.top} />
+          <stop offset="100%" stopColor={colors.top} />
+        </linearGradient>
+        <linearGradient id={`${idPrefix}bottom-${type}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={colors.bottom} />
+          <stop offset="100%" stopColor={colors.bottom} />
+        </linearGradient>
+      </defs>
+      <path d="M 4,24 a 20,20 0 1,1 40,0" fill={`url(#${idPrefix}top-${type})`} stroke={colors.band} strokeWidth="2.5" />
+      <path d="M 44,24 a 20,20 0 1,1 -40,0" fill={`url(#${idPrefix}bottom-${type})`} stroke={colors.band} strokeWidth="2.5" />
+      <rect x="4" y="22.5" width="40" height="3" fill={colors.band} />
+      <circle cx="24" cy="24" r="7" fill={colors.button} stroke={colors.buttonBorder} strokeWidth="2" />
+    </svg>
+  );
+}
+
 function App() {
   const [bgEntering, setBgEntering] = useState(false);
   const [pokemonActual, setPokemonActual] = useState(null);
+  const [captureNotification, setCaptureNotification] = useState(null);
+  const [capturedCount, setCapturedCount] = useState(0);
     const [backgroundSprite, setBackgroundSprite] = useState(null);
     const handleChangePokemon = (poke) => {
       setBackgroundSprite(null);
@@ -93,7 +125,7 @@ function App() {
 
 
   // Board devolverá nextPiece, score y shapeColors como props
-  const [boardState, setBoardState] = useState({ nextPiece: null, score: 0, shapeColors: {} });
+  const [boardState, setBoardState] = useState({ nextPiece: null, score: 0, shapeColors: {}, gameOver: false });
   const [boardKey, setBoardKey] = useState(0);
   const [credits, setCredits] = useState(100); // Créditos iniciales separados del score
 
@@ -111,6 +143,18 @@ function App() {
   // Función para actualizar solo los créditos (usado por compras)
   const updateCredits = (newCredits) => {
     setCredits(newCredits);
+  };
+  
+  // Función para resetear créditos al valor inicial
+  const resetCredits = () => {
+    setCredits(100);
+    setCapturedCount(0);
+  };
+  
+  // Función para manejar captura de Pokémon
+  const handleCapture = (notification) => {
+    setCaptureNotification(notification);
+    setCapturedCount(prev => prev + 1);
   };
 
   if (loading || displayProgress < 100 || gifCyclesAfterFull < 2) {
@@ -169,9 +213,41 @@ function App() {
         score={boardState.score}
         shapeColors={boardState.shapeColors}
       />
+      
+      {/* Notificación de captura como popup absoluto, sin afectar flujo del Header */}
+      {captureNotification && (
+        <div
+          className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[100] flex-shrink-0 bg-green-600 text-white font-bold px-4 py-2 rounded shadow-lg flex items-center gap-3"
+          style={{
+            animation: 'capture-fade 3s ease-out forwards',
+            textShadow: '0 0 8px #000',
+            maxWidth: '300px'
+          }}
+        >
+          <div className="text-sm whitespace-nowrap">{captureNotification.text}</div>
+          <div className="flex items-center gap-2">
+            {captureNotification.sprite && (
+              <img
+                src={captureNotification.sprite}
+                alt="Captured Pokemon"
+                className="w-10 h-10"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            )}
+            {captureNotification.ballType && (
+              <PokeballSVG 
+                type={captureNotification.ballType} 
+                size={40} 
+                idPrefix="capture-popup-"
+              />
+            )}
+          </div>
+        </div>
+      )}
+      
       <div className="application-container flex flex-row w-full flex-grow min-h-0 items-center justify-between relative">
   <div className="relative flex flex-col items-end">
-          <PokeballSidebar score={credits} updateScore={updateCredits} />
+          <PokeballSidebar score={credits} updateScore={updateCredits} disabled={boardState.gameOver} />
           {/* Switch de idioma y botón de ayuda abajo a la izquierda, compacto */}
           <div className="fixed bottom-3 left-3 z-50 flex gap-1 items-center">
             <button
@@ -207,10 +283,17 @@ function App() {
             onScoreIncrement={incrementScore}
             currentScore={boardState.score}
             isPaused={showTutorial}
+            onResetCredits={resetCredits}
+            capturedCount={capturedCount}
           />
         </div>
         <div className="flex items-center z-20">
-          <PokemonBox pokemon={pokemonActual} onChangePokemon={handleChangePokemon} />
+          <PokemonBox 
+            pokemon={pokemonActual} 
+            onChangePokemon={handleChangePokemon}
+            onCapture={handleCapture}
+            disabled={boardState.gameOver}
+          />
         </div>
       </div>
       {showTutorial && (

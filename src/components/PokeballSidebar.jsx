@@ -26,13 +26,14 @@ function PokeballHTML({ className, idx }) {
   );
 }
 
-export default function PokeballSidebar({ score, updateScore }) {
+export default function PokeballSidebar({ score, updateScore, disabled = false }) {
   const { language } = useLanguage();
   const { addBall } = usePokeballs();
   const [activeIdx, setActiveIdx] = useState(null);
   const [purchaseAnimations, setPurchaseAnimations] = useState([]);
 
   const handlePurchase = (idx) => {
+    if (disabled) return; // No permitir compras si está deshabilitado
     const price = pokeballs[idx].price;
     if (score >= price) {
       addBall(idx);
@@ -66,14 +67,14 @@ export default function PokeballSidebar({ score, updateScore }) {
       <div className="pokeball-sidebar flex flex-col gap-1.5 items-end h-fit w-full justify-start mt-2">
         {pokeballs.map((ball, idx) => (
           <div
-            className={`group bg-gradient-to-l from-black via-red-900 to-blue-950 z-10 flex items-center transition-all duration-200 hover:brightness-125 cursor-pointer w-full h-auto justify-end box-border overflow-visible min-w-[12vw] max-w-[20vw] p-0 m-0`}
+            className={`group bg-gradient-to-l from-black via-red-900 to-blue-950 z-10 flex items-center transition-all duration-200 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-125 cursor-pointer'} w-full h-auto justify-end box-border overflow-visible min-w-[12vw] max-w-[20vw] p-0 m-0`}
             key={idx}
             style={{ position: 'relative' }}
           >
             <div 
-              className={`w-full h-full ${activeIdx === idx ? 'scale-95' : ''} transition-transform duration-200`}
-              onClick={() => handlePurchase(idx)}
-              onMouseDown={() => setActiveIdx(idx)}
+              className={`w-full h-full ${activeIdx === idx && !disabled ? 'scale-95' : ''} transition-transform duration-200`}
+              onClick={() => !disabled && handlePurchase(idx)}
+              onMouseDown={() => !disabled && setActiveIdx(idx)}
               onMouseUp={() => setActiveIdx(null)}
               onMouseLeave={() => setActiveIdx(null)}
             >

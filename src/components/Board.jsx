@@ -8,7 +8,7 @@ import Logo from "../assets/poketrisLOGO.png";
 // TODO:
 // WHEN A COLUMN IS CLEARED AND THE REMAINING PIECES MOVE TO THE RIGHT, IF ANOTHER FULL COLUMN IS FORMED, IT DOES NOT GET CLEARED
 
-export default function Board({ pokemonBox, onStateChange, onScoreIncrement, currentScore, isPaused = false }) {
+export default function Board({ pokemonBox, onStateChange, onScoreIncrement, currentScore, isPaused = false, onResetCredits, capturedCount = 0 }) {
   const rows = 12;
   const cols = 25;
   const gravitySpeed = 600; // Reducido de 400ms a 600ms para hacerlo más lento
@@ -293,9 +293,12 @@ export default function Board({ pokemonBox, onStateChange, onScoreIncrement, cur
     setBoard(emptyBoard);
     boardRef.current = emptyBoard;
     resetBag();
-    // No establecer score aquí, se manejará desde App.jsx si es necesario
+    // Resetear score y créditos
     if (onStateChange) {
       onStateChange({ nextPiece: getRandomShape(), score: 0, shapeColors });
+    }
+    if (onResetCredits) {
+      onResetCredits(); // Resetear créditos a 100
     }
     setGameOver(false);
     setNextPiece(getRandomShape());
@@ -402,9 +405,9 @@ export default function Board({ pokemonBox, onStateChange, onScoreIncrement, cur
 
   useEffect(() => {
     if (onStateChange) {
-      onStateChange({ nextPiece, score: currentScore, shapeColors });
+      onStateChange({ nextPiece, score: currentScore, shapeColors, gameOver });
     }
-  }, [nextPiece, currentScore]);
+  }, [nextPiece, currentScore, gameOver]);
 
   return (
     <div className="flex flex-col items-start space-y-6 w-full h-fit flex-grow min-h-0 z-20">
@@ -480,7 +483,7 @@ export default function Board({ pokemonBox, onStateChange, onScoreIncrement, cur
         </div>
       </div>
       {/* El tablero siempre se renderiza; el modal aparece encima como un popup */}
-      {gameOver && <GameOverModal score={currentScore} onRestart={restartGame} />}
+      {gameOver && <GameOverModal score={currentScore} capturedCount={capturedCount} onRestart={restartGame} />}
     </div>
   );
 }

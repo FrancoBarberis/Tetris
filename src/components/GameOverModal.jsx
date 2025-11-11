@@ -2,18 +2,20 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-export default function GameOverModal({ score, onRestart }) {
+export default function GameOverModal({ score, capturedCount, onRestart }) {
   const { language } = useLanguage();
   
   const translations = {
     en: {
       title: 'Game Over',
       score: 'Your score',
+      captured: 'Pokémon captured',
       restart: 'Restart'
     },
     es: {
       title: 'Fin del Juego',
       score: 'Tu puntuación',
+      captured: 'Pokémon capturados',
       restart: 'Reiniciar'
     }
   };
@@ -37,7 +39,8 @@ export default function GameOverModal({ score, onRestart }) {
       <div className="game-over-modal relative max-w-sm w-full mx-4 pointer-events-auto z-[200]">
           <div className="bg-gradient-to-b from-black to-blue-900 rounded p-3 text-center border-1 border-blue-600">
             <h2 className="text-2xl font-extrabold mb-4 text-gray-300 uppercase drop-shadow">{t.title}</h2>
-            <p className="mb-6 text-md text-gray-300 uppercase">{t.score}<br /><span className="font-bold text-2xl text-gray-300 drop-shadow">{score}</span></p>
+            <p className="mb-2 text-md text-gray-300 uppercase">{t.score}<br /><span className="font-bold text-2xl text-gray-300 drop-shadow">{score}</span></p>
+            <p className="mb-6 text-md text-gray-300 uppercase">{t.captured}<br /><span className="font-bold text-2xl text-gray-300 drop-shadow">{capturedCount}</span></p>
             <div className="flex justify-center">
               <button
                 onClick={onRestart}

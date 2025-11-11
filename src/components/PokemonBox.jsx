@@ -62,7 +62,7 @@ import React, { useEffect, useRef } from "react";
 import { TYPE_COLORS, TYPE_NAMES_ES, TYPE_NAMES_EN } from "../utils/typeColors";
 import { useLanguage } from "../contexts/LanguageContext";
 
-export default function PokemonBox({ pokemon, onChangePokemon }) {
+export default function PokemonBox({ pokemon, onChangePokemon, onCapture, disabled = false }) {
   // Determinar género random según la pokeapi species
   const [genderSymbol, setGenderSymbol] = React.useState({ symbol: null, color: null });
   // Efecto para obtener el género desde la species y asignar el símbolo
@@ -108,8 +108,6 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
   const [resettingHP, setResettingHP] = React.useState(true);
   const [damaged, setDamaged] = React.useState(false);
   const [damageAnimations, setDamageAnimations] = React.useState([]);
-  const [captureNotification, setCaptureNotification] = React.useState(null);
-  const [capturedWithBall, setCapturedWithBall] = React.useState(null);
   const { language } = useLanguage();
   const TYPE_NAMES = language === "es" ? TYPE_NAMES_ES : TYPE_NAMES_EN;
   const isFirstPokemon = React.useRef(true);
@@ -260,9 +258,9 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
   // Daño según tipo de ball
   const getBallDamage = (ballIndex) => {
     // Precios: 5, 15, 50, 100
-    // Daño proporcional al precio: precio * 1 = daño base
+    // Daño proporcional al precio: precio * 1.4 = daño base (40% más de daño)
     const prices = [5, 15, 50, 100];
-    const baseDamage = prices[ballIndex];
+    const baseDamage = Math.round(prices[ballIndex] * 1.4); // 7, 21, 70, 140
     
     // El defenseFactor reduce el daño como porcentaje
     // defenseFactor es la suma de defense + special-defense
@@ -292,17 +290,23 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
         // Shake letal tras vaciar la barra
         setTimeout(() => setDefeated(true), 600);
         
-        // Mostrar notificación de captura con sprite y pokeball
+        // Enviar notificación de captura al componente padre
         const captureName = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
         const captureText = language === "es" 
           ? `¡Capturaste a ${captureName}!` 
           : `You caught ${captureName}!`;
-        setCaptureNotification(captureText);
-        setCapturedWithBall(ballIndex); // Guardar qué ball se usó
-        setTimeout(() => {
-          setCaptureNotification(null);
-          setCapturedWithBall(null);
-        }, 3000);
+        
+        if (onCapture) {
+          onCapture({
+            text: captureText,
+            sprite: pokemon.sprites.front_default,
+            ballType: ['normal', 'super', 'ultra', 'master'][ballIndex]
+          });
+          // Limpiar notificación después de 3 segundos
+          setTimeout(() => {
+            onCapture(null);
+          }, 3000);
+        }
         
         // Esperar a que la animación de la barra y la animación de derrota terminen antes de cambiar el Pokémon
         setTimeout(() => {
@@ -329,58 +333,12 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
       className="bg-gradient-to-l from-blue-950 via-red-900 to-black rounded p-3 flex flex-col items-center mr-2 xl:mr-5 max-h-fit z-20 opacity-85"
       style={{ width: '240px', minWidth: '240px', maxWidth: '240px', position: 'relative' }}
     >
-      {/* Notificación de captura */}
-      {captureNotification && (
-        <div
-          className="absolute top-0 left-1/2 z-50 bg-green-600 text-white font-bold px-4 py-3 rounded shadow-lg pointer-events-none flex flex-col items-center gap-2"
-          style={{
-            transform: 'translateX(-50%) translateY(-120%)',
-            animation: 'capture-notification 3s ease-out forwards',
-            textShadow: '0 0 8px #000',
-            minWidth: '200px'
-          }}
-        >
-          <div className="text-sm whitespace-nowrap">{captureNotification}</div>
-          <div className="flex items-center gap-3">
-            {/* Sprite del Pokémon capturado */}
-            {pokemon?.sprites?.front_default && (
-              <img
-                src={pokemon.sprites.front_default}
-                alt={pokemon.name}
-                className="w-12 h-12"
-                style={{ imageRendering: 'pixelated' }}
-              />
-            )}
-            {/* SVG de la pokeball usada */}
-            {capturedWithBall !== null && (
-              <div>
-                <PokeballSVG 
-                  type={['normal', 'super', 'ultra', 'master'][capturedWithBall]} 
-                  size={48} 
-                  idPrefix="capture-"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      
-      {/* Animación CSS para la notificación de captura */}
-      <style>{`
-        @keyframes capture-notification {
-          0% { opacity: 0; transform: translateX(-50%) translateY(-140%); }
-          10% { opacity: 1; transform: translateX(-50%) translateY(-120%); }
-          90% { opacity: 1; transform: translateX(-50%) translateY(-120%); }
-          100% { opacity: 0; transform: translateX(-50%) translateY(-120%); }
-        }
-      `}</style>
-      
       {/* Botón de huir */}
       <div className="w-full flex justify-center mb-2">
           <button
             className="bg-gradient-to-r from-red-700 to-black text-white font-bold px-3 py-2 rounded shadow hover:scale-105 hover:brightness-150 transition-transform text-xs uppercase cursor-pointer mb-2 min-w-[54px] xl:min-w-[60px] max-w-[80px] text-center whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:brightness-100"
             onClick={handleFlee}
-            disabled={entering}
+            disabled={entering || disabled}
             style={{paddingLeft: '12px', paddingRight: '12px', paddingTop: '8px', paddingBottom: '8px'}}
           >
             {language === "es" ? "Huir" : "Flee"}
@@ -391,28 +349,28 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
         <PokeballButton
           type="normal"
           color="#E53E3E"
-          disabled={balls[0] === 0 || currentHP === 0}
+          disabled={balls[0] === 0 || currentHP === 0 || disabled}
           onClick={() => handleUseBall(0)}
           label={balls[0]}
         />
         <PokeballButton
           type="super"
           color="#3182CE"
-          disabled={balls[1] === 0 || currentHP === 0}
+          disabled={balls[1] === 0 || currentHP === 0 || disabled}
           onClick={() => handleUseBall(1)}
           label={balls[1]}
         />
         <PokeballButton
           type="ultra"
           color="#ECC94B"
-          disabled={balls[2] === 0 || currentHP === 0}
+          disabled={balls[2] === 0 || currentHP === 0 || disabled}
           onClick={() => handleUseBall(2)}
           label={balls[2]}
         />
         <PokeballButton
           type="master"
           color="#9F7AEA"
-          disabled={balls[3] === 0 || currentHP === 0}
+          disabled={balls[3] === 0 || currentHP === 0 || disabled}
           onClick={() => handleUseBall(3)}
           label={balls[3]}
         />
