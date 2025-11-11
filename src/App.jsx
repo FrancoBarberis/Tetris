@@ -81,7 +81,7 @@ function App() {
     if (!pokemonActual) {
       getRandomPokemon().then((poke) => {
         setPokemonActual(poke);
-        setBackgroundSprite(poke?.sprites?.front_default || null);
+        // No establecer backgroundSprite aquí, dejar que el otro useEffect lo maneje
       });
     }
   }, [pokemonActual]);
@@ -156,7 +156,7 @@ function App() {
       />
       <div className="application-container flex flex-row w-full flex-grow min-h-0 items-center justify-between relative">
   <div className="relative flex flex-col items-end">
-          <PokeballSidebar />
+          <PokeballSidebar score={boardState.score} />
           {/* Switch de idioma abajo a la izquierda, compacto */}
           <div className="fixed bottom-3 left-3 z-50 flex gap-1 items-center">
             <button
@@ -183,7 +183,7 @@ function App() {
             isPaused={showTutorial}
           />
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center z-20">
           <PokemonBox pokemon={pokemonActual} onChangePokemon={handleChangePokemon} />
         </div>
       </div>

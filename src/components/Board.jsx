@@ -22,6 +22,23 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   const [board, setBoard] = useState(Array.from({ length: rows }, () => Array(cols).fill(null)));
   const [gameOver, setGameOver] = useState(false);
   const [colsFading, setColsFading] = useState([]);
+  const gravityIntervalRef = useRef(null);
+  const activePositionRef = useRef(activePosition);
+  const activePieceRef = useRef(activePiece);
+  const boardRef = useRef(board);
+
+  // Mantener las referencias actualizadas
+  useEffect(() => {
+    activePositionRef.current = activePosition;
+  }, [activePosition]);
+
+  useEffect(() => {
+    activePieceRef.current = activePiece;
+  }, [activePiece]);
+
+  useEffect(() => {
+    boardRef.current = board;
+  }, [board]);
 
   function spawnPiece() {
     // Posición de inicio: completamente a la izquierda (fuera del tablero)
@@ -38,6 +55,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
     // comprobar colisión en spawn: solo consideramos solapamiento con celdas
     // ya ocupadas dentro de los límites del tablero. Si la pieza está
     // parcialmente fuera (y < 0 o x fuera), no consideramos eso como game over.
+    const currentBoard = boardRef.current;
     let collision = false;
     for (let r = 0; r < nextPiece.matrix.length; r++) {
       for (let c = 0; c < nextPiece.matrix[r].length; c++) {
@@ -46,7 +64,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
         const x = startPos.x + c;
         // Solo si está dentro del tablero comprobamos solapamiento
         if (y >= 0 && y < rows && x >= 0 && x < cols) {
-          if (board[y][x]) {
+          if (currentBoard[y][x]) {
             collision = true;
             break;
           }
@@ -65,12 +83,15 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
     setNextPiece(getRandomShape());
   }
 
-  function rotatePiece(piece) {
+  function rotatePiece(piece, currentPosition) {
+    if (!piece || !currentPosition) return piece;
+    
     const rotatedMatrix = piece.matrix[0].map((_, i) =>
       piece.matrix.map((row) => row[i]).reverse()
     );
 
     const newPiece = { ...piece, matrix: rotatedMatrix };
+    const currentBoard = boardRef.current;
 
     const kicks = [
       { x: 0, y: 0 },
@@ -82,8 +103,8 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
 
     for (const kick of kicks) {
       const testPosition = {
-        x: activePosition.x + kick.x,
-        y: activePosition.y + kick.y,
+        x: currentPosition.x + kick.x,
+        y: currentPosition.y + kick.y,
       };
 
       let fits = true;
@@ -104,7 +125,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
           // If outside left/top, ignore for collision (allowed during spawn/entering)
           if (x < 0 || y < 0) continue;
 
-          if (board[y][x]) {
+          if (currentBoard[y][x]) {
             fits = false;
             break;
           }
@@ -122,11 +143,13 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   }
 
   function canMove(nextPosition) {
-    if (!activePiece) return false;
+    const currentPiece = activePieceRef.current;
+    const currentBoard = boardRef.current;
+    if (!currentPiece) return false;
 
-    for (let r = 0; r < activePiece.matrix.length; r++) {
-      for (let c = 0; c < activePiece.matrix[r].length; c++) {
-        if (activePiece.matrix[r][c]) {
+    for (let r = 0; r < currentPiece.matrix.length; r++) {
+      for (let c = 0; c < currentPiece.matrix[r].length; c++) {
+        if (currentPiece.matrix[r][c]) {
           const x = nextPosition.x + c;
           const y = nextPosition.y + r;
 
@@ -138,7 +161,7 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
           if (x < 0) continue;
 
           // Otherwise check collision with settled blocks
-          if (board[y][x]) return false;
+          if (currentBoard[y][x]) return false;
         }
       }
     }
@@ -147,22 +170,44 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
   }
 
   function solidifyPiece() {
-    const newBoard = board.map((row) => [...row]);
-
-    // Detectar si alguna celda de la pieza queda fuera del tablero al solidificar
-    let outOfBounds = false;
-    activePiece.matrix.forEach((row, r) => {
+    // Usar las refs para asegurar que tenemos los valores más actuales
+    const currentPiece = activePieceRef.current;
+    const currentPos = activePositionRef.current;
+    const currentBoard = boardRef.current;
+    
+    if (!currentPiece || !currentPos) return;
+    
+    // Verificar si alguna celda de la pieza está dentro del tablero
+    let hasAnyInsideBoard = false;
+    currentPiece.matrix.forEach((row, r) => {
       row.forEach((cell, c) => {
         if (!cell) return;
-        const y = activePosition.y + r;
-        const x = activePosition.x + c;
-        // Si la celda está fuera de los límites, marcar outOfBounds
-        if (y < 0 || y >= rows || x < 0 || x >= cols) {
-          outOfBounds = true;
-          return;
+        const x = currentPos.x + c;
+        if (x >= 0 && x < cols) {
+          hasAnyInsideBoard = true;
         }
-        // Solo escribir dentro del tablero
-        newBoard[y][x] = activePiece.type;
+      });
+    });
+    
+    // Si ninguna celda está dentro del tablero, es game over
+    if (!hasAnyInsideBoard) {
+      setGameOver(true);
+      return;
+    }
+    
+    const newBoard = currentBoard.map((row) => [...row]);
+
+    // Escribir la pieza en el tablero
+    currentPiece.matrix.forEach((row, r) => {
+      row.forEach((cell, c) => {
+        if (!cell) return;
+        const y = currentPos.y + r;
+        const x = currentPos.x + c;
+        
+        // Escribir solo dentro del tablero
+        if (y >= 0 && y < rows && x >= 0 && x < cols) {
+          newBoard[y][x] = currentPiece.type;
+        }
       });
     });
 
@@ -186,20 +231,20 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
       // Marcar las celdas a eliminar con fade-out antes de borrarlas
       // Solidificar la pieza y aplicar fade-out a las columnas a borrar
       setBoard(prev => {
-        // Primero solidificamos la pieza activa en el tablero
+        // Primero solidificamos la pieza activa en el tablero usando las refs
         let boardWithPiece = prev.map(row => [...row]);
-        activePiece.matrix.forEach((row, r) => {
+        currentPiece.matrix.forEach((row, r) => {
           row.forEach((cell, c) => {
             if (!cell) return;
-            const y = activePosition.y + r;
-            const x = activePosition.x + c;
+            const y = currentPos.y + r;
+            const x = currentPos.x + c;
             if (y >= 0 && y < rows && x >= 0 && x < cols) {
-              boardWithPiece[y][x] = activePiece.type;
+              boardWithPiece[y][x] = currentPiece.type;
             }
           });
         });
         // Ahora aplicamos fade-out a las columnas a borrar
-        return boardWithPiece.map((row, rowIdx) =>
+        const boardWithFadeOut = boardWithPiece.map((row, rowIdx) =>
           row.map((cell, colIdx) => {
             if (colsToClear.includes(colIdx) && cell) {
               return { type: typeof cell === 'object' ? cell.type : cell, fading: true };
@@ -207,6 +252,9 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
             return cell;
           })
         );
+        // Actualizar la ref sincrónicamente
+        boardRef.current = boardWithFadeOut;
+        return boardWithFadeOut;
       });
       // Esperar la animación antes de eliminar (más rápido)
       setTimeout(() => {
@@ -220,6 +268,8 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
             }
             return newRow;
           });
+          // Actualizar la ref sincrónicamente
+          boardRef.current = clearedBoard;
           return clearedBoard;
         });
         setColsFading([]); // Limpiar columnas en fade-out
@@ -230,19 +280,17 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
     }
 
     setBoard(newBoard);
-
-    if (outOfBounds) {
-      // Si alguna celda quedó fuera al solidificar, es game over
-      setGameOver(true);
-      return;
-    }
+    // Actualizar la ref sincrónicamente para que spawnPiece use el tablero actualizado
+    boardRef.current = newBoard;
 
     // después de solidificar, intentar spawnear la siguiente
     spawnPiece();
   }
 
   function restartGame() {
-    setBoard(Array.from({ length: rows }, () => Array(cols).fill(null)));
+    const emptyBoard = Array.from({ length: rows }, () => Array(cols).fill(null));
+    setBoard(emptyBoard);
+    boardRef.current = emptyBoard;
     resetBag();
     setScore(0);
     setGameOver(false);
@@ -257,47 +305,70 @@ export default function Board({ pokemonBox, onStateChange, isPaused = false }) {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
+      if (!activePieceRef.current || !activePositionRef.current || gameOver || isPaused) return;
+      
       if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
-        setActivePiece(rotatePiece(activePiece));
+        setActivePiece(prev => rotatePiece(prev, activePositionRef.current));
       }
       if (
         event.key === "ArrowRight" ||
         event.key === "d" ||
         event.key === "D"
       ) {
-        if (canMove({ x: activePosition.x + 1, y: activePosition.y })) {
+        if (canMove({ x: activePositionRef.current.x + 1, y: activePositionRef.current.y })) {
           setActivePosition((pos) => ({ x: pos.x + 1, y: pos.y }));
         }
       }
       if (event.key === "ArrowDown" || event.key === "s" || event.key === "S") {
-        if (canMove({ x: activePosition.x, y: activePosition.y + 1 })) {
+        if (canMove({ x: activePositionRef.current.x, y: activePositionRef.current.y + 1 })) {
           setActivePosition((pos) => ({ x: pos.x, y: pos.y + 1 }));
         }
       }
       if (event.key === "ArrowUp" || event.key === "w" || event.key === "W") {
-        if (canMove({ x: activePosition.x, y: activePosition.y - 1 })) {
+        if (canMove({ x: activePositionRef.current.x, y: activePositionRef.current.y - 1 })) {
           setActivePosition((pos) => ({ x: pos.x, y: pos.y - 1 }));
         }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  });
+  }, [gameOver, isPaused]);
 
   useEffect(() => {
     // Pausar el bucle de movimiento si estamos en game over, no hay pieza activa o el juego está pausado
-    if (gameOver || !activePosition || isPaused) return;
+    if (gameOver || !activePosition || isPaused) {
+      if (gravityIntervalRef.current) {
+        clearInterval(gravityIntervalRef.current);
+        gravityIntervalRef.current = null;
+      }
+      return;
+    }
 
-    const interval = setInterval(() => {
-      const nextPosition = { x: activePosition.x + 1, y: activePosition.y };
+    // Limpiar intervalo anterior si existe
+    if (gravityIntervalRef.current) {
+      clearInterval(gravityIntervalRef.current);
+    }
+
+    // Crear nuevo intervalo
+    gravityIntervalRef.current = setInterval(() => {
+      const currentPos = activePositionRef.current;
+      if (!currentPos) return;
+      
+      const nextPosition = { x: currentPos.x + 1, y: currentPos.y };
       if (canMove(nextPosition)) {
-        setActivePosition((pos) => ({ x: pos.x + 1, y: pos.y }));
+        setActivePosition({ x: currentPos.x + 1, y: currentPos.y });
       } else {
         solidifyPiece();
       }
     }, gravitySpeed);
-    return () => clearInterval(interval);
-  }, [canMove, activePosition, gameOver, isPaused]);
+
+    return () => {
+      if (gravityIntervalRef.current) {
+        clearInterval(gravityIntervalRef.current);
+        gravityIntervalRef.current = null;
+      }
+    };
+  }, [gameOver, isPaused, activePiece]);
 
   useEffect(() => {
     spawnPiece();

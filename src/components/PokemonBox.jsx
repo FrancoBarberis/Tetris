@@ -104,14 +104,19 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
   const [damaged, setDamaged] = React.useState(false);
   const { language } = useLanguage();
   const TYPE_NAMES = language === "es" ? TYPE_NAMES_ES : TYPE_NAMES_EN;
+  const isFirstPokemon = React.useRef(true);
 
   // Calcular el HP base del Pokémon
   const hpStat = pokemon?.stats
     ? pokemon.stats.find((stat) => stat.stat.name === "hp")?.base_stat || 100
     : 100;
 
-  // Animación de entrada al cambiar de Pokémon
+  // Animación de entrada al cambiar de Pokémon (pero no en el primer render)
   React.useEffect(() => {
+    if (isFirstPokemon.current) {
+      isFirstPokemon.current = false;
+      return;
+    }
     setEntering(true);
     const timeoutEnter = setTimeout(() => setEntering(false), 700); // fade in más suave
     return () => clearTimeout(timeoutEnter);
@@ -458,7 +463,7 @@ export default function PokemonBox({ pokemon, onChangePokemon }) {
           <span></span>
         </div>
         {/* Tipos al final */}
-        <div className="flex gap-2 mt-3 justify-center w-full flex-nowrap">
+        <div className="flex gap-2 mt-3 justify-center w-full flex-nowrap min-h-[32px]">
           {(pokemon.types || []).map((t) => (
             <span
               key={t.type.name}

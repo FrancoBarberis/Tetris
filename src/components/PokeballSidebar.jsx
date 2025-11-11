@@ -1,6 +1,8 @@
 import React from "react";
 import { usePokeballs } from "../contexts/PokeballContext";
 import PokemonShop from "../assets/PokemonShop3rdGen.png";
+import { useState, useEffect } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const pokeballs = [
   { className: "pokeball pokeball-normal", price: 50, name: "NORMAL" },
@@ -24,20 +26,73 @@ function PokeballHTML({ className, idx }) {
   );
 }
 
-export default function PokeballSidebar() {
-
+export default function PokeballSidebar({ score }) {
+  const { language } = useLanguage();
   const { addBall } = usePokeballs();
+  const [activeIdx, setActiveIdx] = useState(null);
+  const [purchaseAnimations, setPurchaseAnimations] = useState([]);
+
+  const handlePurchase = (idx) => {
+    const price = pokeballs[idx].price;
+    if (score >= price) {
+      addBall(idx);
+      // Agregar animación de +1
+      const animId = Date.now();
+      setPurchaseAnimations(prev => [...prev, { id: animId, idx }]);
+      
+      // Remover después de la animación
+      setTimeout(() => {
+        setPurchaseAnimations(prev => prev.filter(a => a.id !== animId));
+      }, 1000);
+    }
+  };
+
+  const translations = {
+    en: { credits: "Credits" },
+    es: { credits: "Créditos" }
+  };
+  const t = translations[language];
+
   return (
-  <div className="pokeball-sidebar flex flex-col gap-1.5 items-end h-fit w-full justify-start mt-2">
-      {pokeballs.map((ball, idx) => (
-        <div
-          className="group bg-gradient-to-l from-black via-red-900 to-blue-950 z-10 flex items-center transition-all duration-200 hover:brightness-125 cursor-pointer w-full h-auto justify-end relative box-border overflow-hidden min-w-[12vw] max-w-[20vw] p-0 m-0"
-          key={idx}
-          onClick={() => addBall(idx)}
-        >
-          <PokeballHTML className={ball.className} idx={idx} />
-        </div>
-      ))}
+    <div className="relative z-30">
+      {/* Display de créditos */}
+      <div className="mb-3 text-center bg-gradient-to-r from-black via-yellow-900 to-black p-2 rounded border-2 border-yellow-600 relative z-30">
+        <span className="text-yellow-300 font-bold text-lg uppercase tracking-wide">{t.credits}: </span>
+        <span className="text-yellow-100 font-extrabold text-xl">${score}</span>
+      </div>
+      
+      <div className="pokeball-sidebar flex flex-col gap-1.5 items-end h-fit w-full justify-start mt-2">
+        {pokeballs.map((ball, idx) => (
+          <div
+            className={`group bg-gradient-to-l from-black via-red-900 to-blue-950 z-10 flex items-center transition-all duration-200 hover:brightness-125 cursor-pointer w-full h-auto justify-end relative box-border overflow-hidden min-w-[12vw] max-w-[20vw] p-0 m-0`}
+            key={idx}
+          >
+            <div 
+              className={`w-full h-full ${activeIdx === idx ? 'scale-95' : ''} transition-transform duration-200`}
+              onClick={() => handlePurchase(idx)}
+              onMouseDown={() => setActiveIdx(idx)}
+              onMouseUp={() => setActiveIdx(null)}
+              onMouseLeave={() => setActiveIdx(null)}
+            >
+              <PokeballHTML className={ball.className} idx={idx} />
+            </div>
+            
+            {/* Animación +1 */}
+            {purchaseAnimations.filter(a => a.idx === idx).map(anim => (
+              <div
+                key={anim.id}
+                className="absolute right-0 top-1/2 text-green-400 font-bold text-2xl pointer-events-none z-30"
+                style={{
+                  animation: 'purchase-notification 1s ease-out forwards',
+                  textShadow: '0 0 8px #000, 0 0 4px #0f0'
+                }}
+              >
+                +1
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -205,3 +205,20 @@ html, body, #root {
 :root {
   background-color: black;
 }
+
+@keyframes purchase-notification {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(0);
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(30px) translateY(-20px);
+  }
+}
