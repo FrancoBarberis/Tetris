@@ -69,7 +69,7 @@ export default function PokemonBox({ pokemon, onChangePokemon, onCapture, disabl
   useEffect(() => {
     if (!pokemon) return;
     setGenderSymbol({ symbol: null, color: null }); // Reset al cambiar de Pokémon
-    fetch(`http://localhost:3000/api/cry?url=https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}`)
+    fetch(`https://poketris.onrender.com/api/cry?url=https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}`)
       .then(res => res.json())
       .then(species => {
         const rate = species.gender_rate;
@@ -205,7 +205,7 @@ export default function PokemonBox({ pokemon, onChangePokemon, onCapture, disabl
 
   useEffect(() => {
     if (pokemon) {
-      const cryUrl = `http://localhost:3000/api/cry?url=https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`;
+      const cryUrl = `https://poketris.onrender.com/api/cry?url=https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`;
       fetch(cryUrl, { method: "HEAD" })
         .then((res) => {
           if (res.ok) {
@@ -381,7 +381,7 @@ export default function PokemonBox({ pokemon, onChangePokemon, onCapture, disabl
       >
         <audio
           ref={audioRef}
-          src={`https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`}
+          src={`https://poketris.onrender.com/api/cry?url=https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`}
           preload="auto"
         />
         <p className="text-yellow-600 font-bold text-2xl mb-2 drop-shadow cursor-default text-center w-full">
