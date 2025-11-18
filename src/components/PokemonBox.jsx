@@ -69,7 +69,7 @@ export default function PokemonBox({ pokemon, onChangePokemon, onCapture, disabl
   useEffect(() => {
     if (!pokemon) return;
     setGenderSymbol({ symbol: null, color: null }); // Reset al cambiar de Pokémon
-    fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}`)
+    fetch(`http://localhost:3000/api/cry?url=https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}`)
       .then(res => res.json())
       .then(species => {
         const rate = species.gender_rate;
@@ -205,7 +205,7 @@ export default function PokemonBox({ pokemon, onChangePokemon, onCapture, disabl
 
   useEffect(() => {
     if (pokemon) {
-      const cryUrl = `https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`;
+      const cryUrl = `http://localhost:3000/api/cry?url=https://pokeapi.co/media/sounds/cries/${pokemon.id}.mp3`;
       fetch(cryUrl, { method: "HEAD" })
         .then((res) => {
           if (res.ok) {

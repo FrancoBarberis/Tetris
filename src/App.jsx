@@ -207,7 +207,7 @@ function App() {
         }}
       />
       {/* HIERBA ALTA */}
-      <img src={HighGrass} alt="HighGrass" className="pointer-events-none select-none absolute z-10 -bottom-20 w-full h-8/12 opacity-70"  />
+      <img src={HighGrass} alt="HighGrass" className="pointer-events-none select-none absolute z-10 -bottom-20 w-full h-8/12 opacity-70" style={{imageRendering:"pixelated"}}  />
       <Header
         nextPiece={boardState.nextPiece}
         score={boardState.score}
@@ -217,11 +217,10 @@ function App() {
       {/* Notificación de captura como popup absoluto, sin afectar flujo del Header */}
       {captureNotification && (
         <div
-          className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[100] flex-shrink-0 bg-green-600 text-white font-bold px-4 py-2 rounded shadow-lg flex items-center gap-3"
+          className="fixed top-20 right-20 transform -translate-x-1/2 z-[100] flex-shrink-0 bg-green-600 text-white font-thin px-4 py-2 rounded shadow-lg flex flex-col items-center gap-2 max-w-fit"
           style={{
             animation: 'capture-fade 3s ease-out forwards',
             textShadow: '0 0 8px #000',
-            maxWidth: '300px'
           }}
         >
           <div className="text-sm whitespace-nowrap">{captureNotification.text}</div>
